@@ -1,0 +1,16 @@
+{
+  "name": "rete-area-plugin",
+  "version": "0.1.0",
+  "description": "",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "rollup": "^0.59.2",
+    "rollup-plugin-babel": "^3.0.4"
+  }
+}
