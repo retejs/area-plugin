@@ -23,7 +23,7 @@ function nodesBBox(editor, nodes) {
     };
 }
 
-export function zoomAt(editor, nodes = editor.nodes) {
+function zoomAt(editor, nodes = editor.nodes) {
     const bbox = nodesBBox(editor, nodes);
     const [x, y] = bbox.getCenter();
     const [w, h] = [editor.view.container.clientWidth, editor.view.container.clientHeight];
@@ -39,7 +39,7 @@ export function zoomAt(editor, nodes = editor.nodes) {
     area.update();
 }
 
-export function install(editor, params) {
+function install(editor, params) {
     params.scaleExtent = params.scaleExtent || { min: 0.1, max: 1 };
     params.translateExtent = params.translateExtent || { width: 2000, height: 1000 };
 
@@ -78,3 +78,8 @@ export function install(editor, params) {
         data.y += cy;
     });
 }    
+
+export default {
+    install,
+    zoomAt
+}
