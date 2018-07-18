@@ -34,7 +34,7 @@ function zoomAt(editor, nodes = editor.nodes) {
 
     area.transform.x = area.container.clientWidth / 2 - x * k;
     area.transform.y = area.container.clientHeight / 2 - y * k;
-    area.transform.k = k;
+    area.zoom(k, 0, 0);
     
     area.update();
 }
