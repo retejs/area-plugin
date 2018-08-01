@@ -4,12 +4,14 @@ export class Restrictor {
         this.scaleExtent = scaleExtent;
         this.translateExtent = translateExtent;
 
-        editor.on('zoom', this.restrictZoom.bind(this));
-        editor.on('translate', this.restrictTranslate.bind(this));
+        if (scaleExtent)
+            editor.on('zoom', this.restrictZoom.bind(this));
+        if (translateExtent)
+            editor.on('translate', this.restrictTranslate.bind(this));
     }
 
     restrictZoom(data) {
-        const se = this.scaleExtent;
+        const se = typeof this.scaleExtent === 'boolean' ? { min: 0.1, max: 1 } : this.scaleExtent;
         const tr = data.transform;
 
         if (data.zoom < se.min)
@@ -19,7 +21,7 @@ export class Restrictor {
     }
 
     restrictTranslate(data) {
-        const te = this.translateExtent;
+        const te = typeof this.translateExtent === 'boolean' ? { width: 5000, height: 4000 } : this.translateExtent;
         const { container } = this.editor.view;
         const k = data.transform.k;
         const [kw, kh] = [te.width * k, te.height * k];
