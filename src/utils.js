@@ -1,5 +1,5 @@
-const min = (arr) => Math.min(...arr);
-const max = (arr) => Math.max(...arr);
+const min = (arr) => arr.length === 0 ? 0 : Math.min(...arr);
+const max = (arr) => arr.length === 0 ? 0 : Math.max(...arr);
 
 export function nodesBBox(editor, nodes) {
     const left = min(nodes.map(node => node.position[0]));
