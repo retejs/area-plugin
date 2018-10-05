@@ -1,17 +1,9 @@
 export class Background {
-    constructor(editor, enable) {
-        this.editor = editor;
-
-        if (enable) 
-            this.init();
-    }
-
-    init() {
-        const el = document.createElement('div');
-
-        el.innerHTML='hjk'
-        el.className = 'background';
-
-        this.editor.view.area.appendChild(el);
+    constructor(editor, element) {
+        if (!element) return;
+        const el = element instanceof HTMLElement ? element : document.createElement('div');
+     
+        el.classList += ` rete-background ${element === true ? 'default' : ''}`;
+        editor.view.area.appendChild(el);
     }
 }
