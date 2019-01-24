@@ -1,8 +1,9 @@
 {
   "name": "rete-area-plugin",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "",
   "main": "build/area-plugin.min.js",
+  "module": "build/area-plugin.esm.js",
   "scripts": {
     "build": "rete --build rete.config.js",
     "build:dev": "rete --build rete.config.js --watch",
@@ -10,10 +11,8 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "rollup-plugin-sass": "^0.9.2"
-  },
   "devDependencies": {
-    "rete-cli": "^0.1.0"
+    "rete-cli": "^0.4.2",
+    "rollup-plugin-sass": "^0.9.2"
   }
 }
