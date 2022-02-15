@@ -22,6 +22,7 @@ function install(editor, params) {
 }    
 
 export default {
+    name: "area-plugin",
     install,
     zoomAt
 }
