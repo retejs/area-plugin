@@ -19,6 +19,9 @@
     "type": "git",
     "url": "https://github.com/retejs/area-plugin.git"
   },
+  "peerDependencies": {
+    "rete": "^1.4.5"
+  },
   "devDependencies": {
     "@babel/preset-typescript": "^7.3.3",
     "babel-eslint": "^10.0.1",

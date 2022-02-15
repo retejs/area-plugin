@@ -10,23 +10,17 @@ type Params = {
     snap?: SnapParam;
     scaleExtent?: ScaleExtentType | true;
     translateExtent?: TranslateExtentType | true;
-
 }
 
-function install(editor: NodeEditor, params: Params) {
-    let background = params.background || false;
-    let snap = params.snap || false;
-    let scaleExtent = params.scaleExtent || false;
-    let translateExtent = params.translateExtent || false;
-
-    if (background) {
-        new Background(editor, background);
+function install(context: NodeEditor, options: Params) {
+    if (options.background) {
+        new Background(context, options.background);
     }
-    if (scaleExtent || translateExtent) {
-        new Restrictor(editor, scaleExtent, translateExtent)
+    if (options.scaleExtent || options.translateExtent) {
+        new Restrictor(context, options.scaleExtent, options.translateExtent)
     }
-    if (snap) {
-        new SnapGrid(editor, snap);
+    if (options.snap) {
+        new SnapGrid(context, options.snap);
     }
 }    
 

@@ -7,30 +7,35 @@ type ZoomParam = { zoom: number }
 
 export class Restrictor {
     editor: NodeEditor
-    scaleExtent: ScaleExtentType
-    translateExtent: TranslateExtentType
-    constructor(editor: NodeEditor, scaleExtent: ScaleExtentType | boolean, translateExtent: TranslateExtentType | boolean) {
+    scaleExtent: ScaleExtentType | undefined
+    translateExtent: TranslateExtentType | undefined
+    constructor(editor: NodeEditor, scaleExtent: ScaleExtentType | undefined | boolean, translateExtent: TranslateExtentType | undefined | boolean) {
         this.editor = editor;
-        this.scaleExtent = typeof scaleExtent === 'boolean' ? { min: 0.1, max: 1 } : scaleExtent;
-        this.translateExtent = typeof translateExtent === 'boolean' ? { width: 5000, height: 4000 } : translateExtent;
-
-        if (scaleExtent)
+        if (scaleExtent) {
+            this.scaleExtent = scaleExtent === true ? { min: 0.1, max: 1 } : scaleExtent;
             editor.on('zoom', this.restrictZoom.bind(this));
-        if (translateExtent)
+        }
+
+        if (translateExtent) {
+            this.translateExtent = translateExtent === true ? {
+                width: 5000,
+                height: 4000
+            } : translateExtent;
             editor.on('translate', this.restrictTranslate.bind(this));
+        }
     }
 
     restrictZoom(data: ZoomParam) {
-        if (data.zoom < this.scaleExtent.min)
-            data.zoom = this.scaleExtent.min;
-        else if (data.zoom > this.scaleExtent.max)
-            data.zoom = this.scaleExtent.max;
+        if (data.zoom < this.scaleExtent!.min)
+            data.zoom = this.scaleExtent!.min;
+        else if (data.zoom > this.scaleExtent!.max)
+            data.zoom = this.scaleExtent!.max;
     }
 
     restrictTranslate(data: TranslateParam) {
         const { container } = this.editor.view;
         const k = data.transform.k;
-        const [kw, kh] = [this.translateExtent.width * k, this.translateExtent.height * k];
+        const [kw, kh] = [this.translateExtent!.width * k, this.translateExtent!.height * k];
         const cx = container.clientWidth / 2;
         const cy = container.clientHeight / 2;
 
