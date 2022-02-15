@@ -2,13 +2,16 @@
   "name": "rete-area-plugin",
   "version": "0.2.1",
   "description": "",
-  "main": "build/area-plugin.min.js",
+  "main": "build/area-plugin.common.js",
   "module": "build/area-plugin.esm.js",
-  "types": "index.d.ts",
+  "types": "types/index.d.ts",
   "scripts": {
     "build": "rete --build rete.config.js",
     "build:dev": "rete --build rete.config.js --watch",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "prebuild": "npm run lint && npm run types",
+    "lint": "tsc",
+    "types": "tsc src/index.ts --declaration --outDir ./types --downlevelIteration --emitDeclarationOnly"
   },
   "author": "Vitaliy Stoliarov",
   "license": "MIT",
@@ -17,8 +20,12 @@
     "url": "https://github.com/retejs/area-plugin.git"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.3.3",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.14.1",
     "rete": "^1.4.5",
-    "rete-cli": "^0.4.2",
-    "rollup-plugin-sass": "^1.2.2"
+    "rete-cli": "^0.6.0",
+    "rollup-plugin-sass": "^1.2.2",
+    "typescript": "3.3.4000"
   }
 }

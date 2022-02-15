@@ -1,9 +1,14 @@
-export class SnapGrid {
-    constructor(editor, { size = 16, dynamic = true }) {
-        this.editor = editor;
-        this.size = size;
+import { Node, NodeEditor } from "rete";
 
-        if (dynamic)
+export type SnapParam = { size: number, dynamic: boolean }
+export class SnapGrid {
+    editor: NodeEditor;
+    size: number;
+    constructor(editor: NodeEditor, params: SnapParam) {
+        this.editor = editor;
+        this.size = params.size;
+
+        if (params.dynamic)
             this.editor.on('nodetranslate', this.onTranslate.bind(this))
         else
             this.editor.on('rendernode', ({ node, el }) => {
@@ -13,25 +18,31 @@ export class SnapGrid {
             });
     }
 
-    onTranslate(data) {
+    onTranslate(data: {
+        node: Node;
+        x: number;
+        y: number;
+    }) {
         const { x, y } = data;
 
         data.x = this.snap(x);
         data.y = this.snap(y);
     }
 
-    onDrag(node) {
+    onDrag(node: Node) {
         const [ x, y ] = node.position;
 
         node.position[0] = this.snap(x);
         node.position[1] = this.snap(y);
-        console.log(this, x, y, node.position)
         
-        this.editor.view.nodes.get(node).update();
+        const nodeInstance = this.editor.view.nodes.get(node);
+        if (nodeInstance) {
+            nodeInstance.update()
+        }
         this.editor.view.updateConnections({ node });
     }
     
-    snap(value) {
+    snap(value: number) {
         return Math.round(value/this.size) * this.size;
     }
 }
