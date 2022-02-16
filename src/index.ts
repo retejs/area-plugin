@@ -12,7 +12,7 @@ type Params = {
     translateExtent?: TranslateExtentType | true;
 }
 
-const install = (context: NodeEditor, options?: Params): void => {
+const install = (context: NodeEditor | any, options?: Params | any): void => {
     if (!options) return;
 
     if (options.background) {
