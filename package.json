@@ -1,6 +1,6 @@
 {
   "name": "rete-area-plugin",
-  "version": "0.3.0-alpha2",
+  "version": "0.3.0-alpha3",
   "description": "",
   "main": "build/area-plugin.common.js",
   "module": "build/area-plugin.esm.js",

@@ -1,7 +1,7 @@
-import { NodeEditor } from "rete";
+import { NodeEditor, Node } from "rete";
 import { nodesBBox } from './utils';
 
-export function zoomAt(editor: NodeEditor, nodes = editor.nodes) {
+export const zoomAt = (editor: NodeEditor, nodes: Node[] = editor.nodes): void => {
     const bbox = nodesBBox(editor, nodes);
     const [x, y] = bbox.getCenter();
     const [w, h] = [editor.view.container.clientWidth, editor.view.container.clientHeight];
