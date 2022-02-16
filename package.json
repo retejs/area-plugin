@@ -1,6 +1,6 @@
 {
   "name": "rete-area-plugin",
-  "version": "0.3.0-alpha1",
+  "version": "0.3.0-alpha2",
   "description": "",
   "main": "build/area-plugin.common.js",
   "module": "build/area-plugin.esm.js",
@@ -18,9 +18,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/retejs/area-plugin.git"
-  },
-  "peerDependencies": {
-    "rete": "^1.4.5"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.3.3",
