@@ -12,7 +12,6 @@ export class Restrictor {
 
     restrictZoom(data) {
         const se = typeof this.scaleExtent === 'boolean' ? { min: 0.1, max: 1 } : this.scaleExtent;
-        const tr = data.transform;
 
         if (data.zoom < se.min)
             data.zoom = se.min;
@@ -30,17 +29,17 @@ export class Restrictor {
 
         data.x -= cx;
         data.y -= cy;
-        
+
         if (data.x > kw)
             data.x = kw;
         else if (data.x < - kw)
             data.x = - kw;
-        
+
         if (data.y > kh)
             data.y = kh;
         else if (data.y < - kh)
             data.y = - kh;
-        
+
         data.x += cx;
         data.y += cy;
     }

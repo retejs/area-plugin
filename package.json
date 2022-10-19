@@ -4,10 +4,13 @@
   "description": "",
   "main": "build/area-plugin.min.js",
   "module": "build/area-plugin.esm.js",
+  "types": "types/index.d.ts",
   "scripts": {
-    "build": "rete --build rete.config.js",
-    "build:dev": "rete --build rete.config.js --watch",
-    "prepublishOnly": "npm run build"
+    "build": "rete build -c rete.config.ts",
+    "build:dev": "rete build -c rete.config.ts --watch",
+    "build:inject": "rete build -c rete.config.ts --watch --output ../playground/node_modules/rete-area-plugin",
+    "prepublishOnly": "npm run build",
+    "lint": "rete lint"
   },
   "author": "Vitaliy Stoliarov",
   "license": "MIT",
@@ -15,8 +18,11 @@
     "type": "git",
     "url": "https://github.com/retejs/area-plugin.git"
   },
+  "peerDependencies": {
+    "rete": "file:../rete/rete-2.0.0-beta.1.tgz"
+  },
   "devDependencies": {
-    "rete-cli": "^0.4.2",
+    "rete-cli": "^1.0.0-beta.8",
     "rollup-plugin-sass": "^0.9.2"
   }
 }
