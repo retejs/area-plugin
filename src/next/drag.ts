@@ -1,53 +1,61 @@
-import { listenWindow } from './utils'
+import { PointerListener, usePointerListener } from './utils'
+
+type Position = { x: number, y: number }
 
 export class Drag {
 
-    pointerStart: [number, number] | null;
-    destroy: () => void;
+    private pointerStart?: Position
+    private startPosition?: Position
+    private pointerListener: PointerListener
 
     constructor(
-      private el: HTMLElement,
+      private element: HTMLElement,
+      private getCurrentPosition: () => Position,
+      private getZoom: () => number,
       private onStart: (e: PointerEvent) => void,
-      private onTranslate: (dx: number, dy: number, e: PointerEvent) => void,
+      private onTranslate: (x: number, y: number, e: PointerEvent) => void,
       private onDrag: (e: PointerEvent) => void
     ) {
-        this.pointerStart = null;
-        this.el = el;
-
-        this.el.style.touchAction = 'none';
-        this.el.addEventListener('pointerdown', this.down.bind(this));
-
-        const destroyMove = listenWindow('pointermove', this.move.bind(this));
-        const destroyUp = listenWindow('pointerup', this.up.bind(this));
-
-        this.destroy = () => { destroyMove(); destroyUp(); }
+        this.element.style.touchAction = 'none'
+        this.pointerListener = usePointerListener(this.element, {
+            down: this.down,
+            move: this.move,
+            up: this.up
+        })
     }
 
-    down(e: PointerEvent) {
-        if ((e.pointerType === 'mouse') && (e.button !== 0)) return;
-        e.stopPropagation();
-        this.pointerStart = [e.pageX, e.pageY]
+    private down = (e: PointerEvent) => {
+        if ((e.pointerType === 'mouse') && (e.button !== 0)) return
+        e.stopPropagation()
+        this.pointerStart = { x: e.pageX, y: e.pageY }
+        this.startPosition = { ...this.getCurrentPosition() }
 
-        this.onStart(e);
+        this.onStart(e)
     }
 
-    move(e: PointerEvent) {
-        if (!this.pointerStart) return;
-        e.preventDefault();
+    private move = (e: PointerEvent) => {
+        if (!this.pointerStart || !this.startPosition) return
+        e.preventDefault()
 
-        const [x, y] = [e.pageX, e.pageY]
+        const delta = {
+            x: e.pageX - this.pointerStart.x,
+            y: e.pageY - this.pointerStart.y
+        }
+        const zoom = this.getZoom()
+        const x = this.startPosition.x + delta.x / zoom
+        const y = this.startPosition.y + delta.y / zoom
 
-        const delta = [x - this.pointerStart[0], y - this.pointerStart[1]];
-
-        const zoom = this.el.getBoundingClientRect().width / this.el.offsetWidth;
-
-        this.onTranslate(delta[0] / zoom, delta[1] / zoom, e);
+        this.onTranslate(x, y, e)
     }
 
-    up(e: PointerEvent) {
-        if (!this.pointerStart) return;
+    private up = (e: PointerEvent) => {
+        if (!this.pointerStart) return
 
-        this.pointerStart = null;
-        this.onDrag(e);
+        delete this.pointerStart
+        this.onDrag(e)
+    }
+
+    public destroy() {
+        this.pointerListener.destroy()
     }
 }
