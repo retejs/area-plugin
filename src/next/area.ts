@@ -20,7 +20,9 @@ export class Area {
       private onTranslated: (params: TranslateEventParams) => Promise<unknown>,
       private canZoom: (params: ZoomEventParams) => Promise<unknown | boolean>,
       private onZoomed: (params: ZoomEventParams) => Promise<unknown>,
-      private onPointerMove: (position: Position) => void
+      private onPointerDown: (position: Position, event: PointerEvent) => void,
+      private onPointerMove: (position: Position, event: PointerEvent) => void,
+      private onPointerUp: (position: Position, event: PointerEvent) => void
     ) {
         this.element = document.createElement('div')
         this.element.style.transformOrigin = '0 0'
@@ -35,7 +37,9 @@ export class Area {
             () => null
         )
 
+        this.container.addEventListener('pointerdown', this.pointerdown)
         this.container.addEventListener('pointermove', this.pointermove)
+        window.addEventListener('pointerup', this.pointerup)
 
         this.update()
     }
@@ -46,14 +50,28 @@ export class Area {
         this.element.style.transform = `translate(${x}px, ${y}px) scale(${k})`
     }
 
-    private pointermove = (event: PointerEvent) => {
+    private updatePointerPosition(event: PointerEvent) {
         const { left, top } = this.element.getBoundingClientRect()
         const x = event.clientX - left
         const y = event.clientY - top
         const k = this.transform.k
 
         this.pointer = { x: x / k, y: y / k }
-        this.onPointerMove(this.pointer)
+    }
+
+    private pointerdown = (event: PointerEvent) => {
+        this.updatePointerPosition(event)
+        this.onPointerDown(this.pointer, event)
+    }
+
+    private pointermove = (event: PointerEvent) => {
+        this.updatePointerPosition(event)
+        this.onPointerMove(this.pointer, event)
+    }
+
+    private pointerup = (event: PointerEvent) => {
+        this.updatePointerPosition(event)
+        this.onPointerUp(this.pointer, event)
     }
 
     private onTranslate = (x: number, y: number) => {
@@ -108,6 +126,9 @@ export class Area {
     }
 
     public destroy() {
+        this.container.removeEventListener('pointerdown', this.pointerdown)
+        this.container.removeEventListener('pointermove', this.pointermove)
+        window.removeEventListener('pointerup', this.pointerup)
         this.dragHandler.destroy()
         this.zoomHandler.destroy()
     }

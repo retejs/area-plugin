@@ -4,11 +4,14 @@ import { Area, TranslateEventParams, ZoomEventParams } from './area'
 import { NodeTranslateEventParams, NodeView } from './node-view'
 import { Position } from './types'
 
+export type { PointerListener } from './utils'
+export { usePointerListener } from './utils'
+
 console.log('area')
 
 export type RenderData<Schemes extends BaseSchemes> =
 | { element: HTMLElement, type: 'node', payload: Schemes['Node'] }
-| { element: HTMLElement, type: 'connection', payload: Schemes['Connection'] }
+| { element: HTMLElement, type: 'connection', payload: Schemes['Connection'], start?: Position, end?: Position }
 
 export type Area2D<Schemes extends BaseSchemes> =
     | { type: 'nodepicked', data: { id: string } }
@@ -16,7 +19,9 @@ export type Area2D<Schemes extends BaseSchemes> =
     | { type: 'nodetranslated', data: { id: string } & NodeTranslateEventParams }
     | { type: 'translate', data: { position: Position } }
     | { type: 'contextmenu', data: { event: MouseEvent, context: 'root' | Schemes['Node'] } }
-    | { type: 'pointermove', data: Position }
+    | { type: 'pointerdown', data: { position: Position, event: PointerEvent }}
+    | { type: 'pointermove', data: { position: Position, event: PointerEvent }}
+    | { type: 'pointerup', data: { position: Position, event: PointerEvent }}
     | { type: 'translate', data: TranslateEventParams }
     | { type: 'translated', data: TranslateEventParams }
     | { type: 'zoom', data: ZoomEventParams }
@@ -61,7 +66,9 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
             params => this.emit({ type: 'translated', data: params }),
             params => this.emit({ type: 'zoom', data: params }),
             params => this.emit({ type: 'zoomed', data: params }),
-            position => this.emit({ type: 'pointermove', data: position })
+            (position, event) => this.emit({ type: 'pointerdown', data: { position, event } }),
+            (position, event) => this.emit({ type: 'pointermove', data: { position, event } }),
+            (position, event) => this.emit({ type: 'pointerup', data: { position, event } })
         )
         container.appendChild(this.area.element)
     }

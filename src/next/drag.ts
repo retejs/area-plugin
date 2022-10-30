@@ -26,6 +26,7 @@ export class Drag {
 
     private down = (e: PointerEvent) => {
         if ((e.pointerType === 'mouse') && (e.button !== 0)) return
+
         e.stopPropagation()
         this.pointerStart = { x: e.pageX, y: e.pageY }
         this.startPosition = { ...this.getCurrentPosition() }
