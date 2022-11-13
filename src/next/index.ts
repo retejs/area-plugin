@@ -4,11 +4,13 @@ import { Area, TranslateEventParams, ZoomEventParams } from './area'
 import { NodeTranslateEventParams, NodeView } from './node-view'
 import { Position } from './types'
 
+export * as AreaExtensions from './extensions'
 export type { PointerListener } from './utils'
 export { usePointerListener } from './utils'
 
 console.log('area')
 
+export type RenderMeta = { filled?: boolean }
 export type RenderData<Schemes extends BaseSchemes> =
 | { element: HTMLElement, type: 'node', payload: Schemes['Node'] }
 | { element: HTMLElement, type: 'connection', payload: Schemes['Connection'], start?: Position, end?: Position }
@@ -26,7 +28,7 @@ export type Area2D<Schemes extends BaseSchemes> =
     | { type: 'translated', data: TranslateEventParams }
     | { type: 'zoom', data: ZoomEventParams }
     | { type: 'zoomed', data: ZoomEventParams }
-    | { type: 'render', data: RenderData<Schemes> }
+    | { type: 'render', data: RenderData<Schemes> & RenderMeta }
     | { type: 'unmount', data: { element: HTMLElement } }
     | { type: 'nodedragged', data: Schemes['Node'] }
 
@@ -50,13 +52,13 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
                 this.addNodeView(context.data)
             }
             if (context.type === 'noderemoved') {
-                this.removeNodeView(context.data)
+                this.removeNodeView(context.data.id)
             }
             if (context.type === 'connectioncreated') {
                 this.addConnection(context.data)
             }
             if (context.type === 'connectionremoved') {
-                this.removeConnection(context.data)
+                this.removeConnection(context.data.id)
             }
             return context
         })
@@ -155,17 +157,4 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
         this.area.destroy()
         this.nodeViews.forEach(node => node.destroy())
     }
-}
-
-export function simpleNodesOrder(plugin: AreaPlugin<BaseSchemes, any>) {
-    plugin.addPipe(context => {
-        if (context.type === 'nodepicked') {
-            const view = plugin.nodeViews.get(context.data.id)
-
-            if (view) {
-                plugin.area.appendChild(view.element)
-            }
-        }
-        return context
-    })
 }
