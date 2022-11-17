@@ -1,6 +1,5 @@
+import { Position } from './types'
 import { PointerListener, usePointerListener } from './utils'
-
-type Position = { x: number, y: number }
 
 export class Drag {
 
