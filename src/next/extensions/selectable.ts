@@ -8,6 +8,9 @@ export function selectableNodes<T>(editor: NodeEditor<Scheme>, area: AreaPlugin<
     let ctrlPressed = false
     let pickedNode: string | null = null
 
+    let moved = false
+    let unselect = false
+
     document.addEventListener('keydown', e => {
         if (e.key === 'Control') ctrlPressed = true
 
@@ -52,6 +55,22 @@ export function selectableNodes<T>(editor: NodeEditor<Scheme>, area: AreaPlugin<
                     view.translate(view.position.x + dx, view.position.y + dy)
                 }
             })
+        } else if (context.type === 'pointerdown') {
+            unselect = true
+            moved = false
+        } else if (context.type === 'pointermove') {
+            moved = true
+        } else if (context.type === 'pointerup') {
+            if (unselect && !moved) {
+                editor.getNodes().forEach(node => {
+                    if (node.selected) {
+                        node.selected = false
+                        area.renderNode(node)
+                    }
+                })
+            }
+            unselect = false
+            moved = false
         }
         return context
     })
