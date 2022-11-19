@@ -18,7 +18,7 @@ export class NodeView {
         this.element = document.createElement('div')
         this.element.style.position = 'absolute'
         this.position = { x: 0, y: 0 }
-        this.translate(200, 100)
+        this.translate(0, 0)
 
         this.dragHandler = new Drag(
             this.element,

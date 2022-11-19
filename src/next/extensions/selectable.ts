@@ -43,18 +43,18 @@ export function selectableNodes<T>(editor: NodeEditor<Scheme>, area: AreaPlugin<
             const dx = position.x -previous.x
             const dy = position.y -previous.y
 
-            if (pickedNode !== id) return
+            if (pickedNode === id) {
+                editor.getNodes().forEach(node => {
+                    if (node.id === id) return
+                    if (!node.selected) return
+                    if (!ctrlPressed) return
+                    const view = area.nodeViews.get(node.id)
 
-            editor.getNodes().forEach(node => {
-                if (node.id === id) return
-                if (!node.selected) return
-                if (!ctrlPressed) return
-                const view = area.nodeViews.get(node.id)
-
-                if (view) {
-                    view.translate(view.position.x + dx, view.position.y + dy)
-                }
-            })
+                    if (view) {
+                        view.translate(view.position.x + dx, view.position.y + dy)
+                    }
+                })
+            }
         } else if (context.type === 'pointerdown') {
             unselect = true
             moved = false
