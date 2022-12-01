@@ -29,6 +29,7 @@ export type Area2D<Schemes extends BaseSchemes> =
     | { type: 'zoom', data: ZoomEventParams }
     | { type: 'zoomed', data: ZoomEventParams }
     | { type: 'render', data: RenderData<Schemes> & RenderMeta }
+    | { type: 'rendered', data: RenderData<Schemes> & RenderMeta }
     | { type: 'unmount', data: { element: HTMLElement } }
     | { type: 'nodedragged', data: Schemes['Node'] }
 
