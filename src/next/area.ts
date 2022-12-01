@@ -22,7 +22,8 @@ export class Area {
       private onZoomed: (params: ZoomEventParams) => Promise<unknown>,
       private onPointerDown: (position: Position, event: PointerEvent) => void,
       private onPointerMove: (position: Position, event: PointerEvent) => void,
-      private onPointerUp: (position: Position, event: PointerEvent) => void
+      private onPointerUp: (position: Position, event: PointerEvent) => void,
+      private onResize: (event: Event) => void
     ) {
         this.element = document.createElement('div')
         this.element.style.transformOrigin = '0 0'
@@ -40,6 +41,7 @@ export class Area {
         this.container.addEventListener('pointerdown', this.pointerdown)
         this.container.addEventListener('pointermove', this.pointermove)
         window.addEventListener('pointerup', this.pointerup)
+        window.addEventListener('resize', this.resize)
 
         this.update()
     }
@@ -72,6 +74,10 @@ export class Area {
     private pointerup = (event: PointerEvent) => {
         this.updatePointerPosition(event)
         this.onPointerUp(this.pointer, event)
+    }
+
+    private resize = (event: Event) => {
+        this.onResize(event)
     }
 
     private onTranslate = (x: number, y: number) => {
@@ -129,6 +135,7 @@ export class Area {
         this.container.removeEventListener('pointerdown', this.pointerdown)
         this.container.removeEventListener('pointermove', this.pointermove)
         window.removeEventListener('pointerup', this.pointerup)
+        window.removeEventListener('resize', this.resize)
         this.dragHandler.destroy()
         this.zoomHandler.destroy()
     }

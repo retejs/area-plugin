@@ -32,6 +32,7 @@ export type Area2D<Schemes extends BaseSchemes> =
     | { type: 'rendered', data: RenderData<Schemes> & RenderMeta }
     | { type: 'unmount', data: { element: HTMLElement } }
     | { type: 'nodedragged', data: Schemes['Node'] }
+    | { type: 'resized', data: { event: Event } }
 
 export type Area2DInherited<Schemes extends BaseSchemes, ExtraSignals = never> = [Area2D<Schemes> | ExtraSignals, Root<Schemes>]
 
@@ -71,7 +72,8 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
             params => this.emit({ type: 'zoomed', data: params }),
             (position, event) => this.emit({ type: 'pointerdown', data: { position, event } }),
             (position, event) => this.emit({ type: 'pointermove', data: { position, event } }),
-            (position, event) => this.emit({ type: 'pointerup', data: { position, event } })
+            (position, event) => this.emit({ type: 'pointerup', data: { position, event } }),
+            event => this.emit({ type: 'resized', data: { event } })
         )
         container.appendChild(this.area.element)
     }
