@@ -40,8 +40,8 @@ export function selectableNodes<T>(editor: NodeEditor<Scheme>, area: AreaPlugin<
             })
         } else if (context.type === 'nodetranslated') {
             const { id, position, previous } = context.data
-            const dx = position.x -previous.x
-            const dy = position.y -previous.y
+            const dx = position.x - previous.x
+            const dy = position.y - previous.y
 
             if (pickedNode === id) {
                 editor.getNodes().forEach(node => {
@@ -49,9 +49,10 @@ export function selectableNodes<T>(editor: NodeEditor<Scheme>, area: AreaPlugin<
                     if (!node.selected) return
                     if (!ctrlPressed) return
                     const view = area.nodeViews.get(node.id)
+                    const current = view?.position
 
-                    if (view) {
-                        view.translate(view.position.x + dx, view.position.y + dy)
+                    if (current) {
+                        view.translate(current.x + dx, current.y + dy)
                     }
                 })
             }

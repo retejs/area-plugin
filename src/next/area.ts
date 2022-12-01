@@ -52,7 +52,7 @@ export class Area {
         this.element.style.transform = `translate(${x}px, ${y}px) scale(${k})`
     }
 
-    private updatePointerPosition(event: PointerEvent) {
+    public setPointerFrom(event: MouseEvent) {
         const { left, top } = this.element.getBoundingClientRect()
         const x = event.clientX - left
         const y = event.clientY - top
@@ -62,17 +62,17 @@ export class Area {
     }
 
     private pointerdown = (event: PointerEvent) => {
-        this.updatePointerPosition(event)
+        this.setPointerFrom(event)
         this.onPointerDown(this.pointer, event)
     }
 
     private pointermove = (event: PointerEvent) => {
-        this.updatePointerPosition(event)
+        this.setPointerFrom(event)
         this.onPointerMove(this.pointer, event)
     }
 
     private pointerup = (event: PointerEvent) => {
-        this.updatePointerPosition(event)
+        this.setPointerFrom(event)
         this.onPointerUp(this.pointer, event)
     }
 
