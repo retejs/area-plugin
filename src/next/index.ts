@@ -1,7 +1,7 @@
 import { BaseSchemes, ConnectionId, NodeId, Root, Scope } from 'rete'
 
 import { Area, TranslateEventParams, ZoomEventParams } from './area'
-import { NodeTranslateEventParams, NodeView } from './node-view'
+import { NodeResizeEventParams, NodeTranslateEventParams, NodeView } from './node-view'
 import { Position } from './types'
 
 export * as AreaExtensions from './extensions'
@@ -33,6 +33,7 @@ export type Area2D<Schemes extends BaseSchemes> =
     | { type: 'unmount', data: { element: HTMLElement } }
     | { type: 'nodedragged', data: Schemes['Node'] }
     | { type: 'resized', data: { event: Event } }
+    | { type: 'noderesized', data: { id: string } & NodeResizeEventParams }
 
 export type Area2DInherited<Schemes extends BaseSchemes, ExtraSignals = never> = [Area2D<Schemes> | ExtraSignals, Root<Schemes>]
 
@@ -49,7 +50,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
             this.emit({ type: 'contextmenu', data: { event, context: 'root' } })
         })
         this.addPipe(context => {
-            if (!context || !('type' in context)) return context
+            if (!context || !(typeof context === 'object' && 'type' in context)) return context
             if (context.type === 'nodecreated') {
                 this.addNodeView(context.data)
             }
