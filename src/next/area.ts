@@ -92,34 +92,38 @@ export class Area {
     }
 
     public async translate(x: number, y: number) {
-        const params = { previous: this.transform, position: { x, y } }
+        type T = undefined | { data: TranslateEventParams }
+        const position = { x, y }
+        const result = await this.canTranslate({ previous: this.transform, position }) as T
 
-        if (!await this.canTranslate(params)) return false
+        if (!result) return false
 
-        this.transform.x = params.position.x
-        this.transform.y = params.position.y
+        this.transform.x = result.data.position.x
+        this.transform.y = result.data.position.y
 
         this.update()
 
-        await this.onTranslated(params)
+        await this.onTranslated(result.data)
         return true
     }
 
+    // eslint-disable-next-line max-statements
     public async zoom(zoom: number, ox = 0, oy = 0, source?: ZoomSource) {
+        type T = undefined | { data: ZoomEventParams }
         const k = this.transform.k
-        const params = { previous: this.transform, zoom, source }
+        const result = await this.canZoom({ previous: this.transform, zoom, source }) as T
 
-        if (!await this.canZoom(params)) return true
+        if (!result) return true
 
-        const d = (k - params.zoom) / ((k - zoom) || 1)
+        const d = (k - result.data.zoom) / ((k - zoom) || 1)
 
-        this.transform.k = params.zoom || 1
+        this.transform.k = result.data.zoom || 1
         this.transform.x += ox * d
         this.transform.y += oy * d
 
         this.update()
 
-        await this.onZoomed(params)
+        await this.onZoomed(result.data)
         return false
     }
 
