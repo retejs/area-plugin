@@ -1,3 +1,4 @@
+export { getBoundingBox } from './bounding-box'
 export { simpleNodesOrder } from './order'
 export { restrictor } from './restrictor'
 export { selectableNodes } from './selectable'
