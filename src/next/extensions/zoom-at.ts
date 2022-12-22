@@ -1,19 +1,14 @@
-import { BaseSchemes, GetSchemes, NodeEditor, NodeId } from 'rete'
+import { NodeEditor } from 'rete'
 
 import { AreaPlugin } from '..'
-import { NodeView } from '../node-view'
 import { getBoundingBox } from '../utils'
-
-type ExpectedSchemes = GetSchemes<
-    BaseSchemes['Node'] & { width?: number, height?: number },
-    BaseSchemes['Connection']
->
-type NodeRef<Schemes extends BaseSchemes> = Schemes['Node'] | Schemes['Node']['id']
+import { NodeRef, SchemesWithSizes } from './shared/types'
+import { getNodesRect } from './shared/utils'
 
 type Params = { scale?: number }
 
 // eslint-disable-next-line max-statements, max-len
-export async function zoomAt<Schemes extends ExpectedSchemes, K>(plugin: AreaPlugin<Schemes, K>, nodes: NodeRef<Schemes>[], params?: Params) {
+export async function zoomAt<Schemes extends SchemesWithSizes, K>(plugin: AreaPlugin<Schemes, K>, nodes: NodeRef<Schemes>[], params?: Params) {
     const { scale = 0.9 } = params || {}
     const editor = plugin.parentScope<NodeEditor<Schemes>>(NodeEditor)
     const list = nodes.map(node => typeof node === 'object' ? node : editor.getNode(node))
@@ -26,27 +21,4 @@ export async function zoomAt<Schemes extends ExpectedSchemes, K>(plugin: AreaPlu
     plugin.area.transform.x = w / 2 - boundingBox.center.x * k
     plugin.area.transform.y = h / 2 - boundingBox.center.y * k
     await plugin.area.zoom(k, 0, 0)
-}
-
-function getNodesRect(nodes: ExpectedSchemes['Node'][], views: Map<NodeId, NodeView>) {
-    return nodes
-        .map(node => ({ view: views.get(node.id) as NodeView, node }))
-        .filter(item => item.view)
-        .map(({ view, node }) => {
-            const { width, height } = node
-
-            if (typeof width !== 'undefined' && typeof height !== 'undefined') {
-                return {
-                    position: view.position,
-                    width,
-                    height
-                }
-            }
-
-            return {
-                position: view.position,
-                width: view.element.clientWidth,
-                height: view.element.clientHeight
-            }
-        })
 }
