@@ -1,7 +1,8 @@
 import { Drag } from './drag'
-import { Position } from './types'
+import { Position, Size } from './types'
 
 export type NodeTranslateEventParams = { position: Position, previous: Position }
+export type NodeResizeEventParams = { size: Size, previous: Size }
 
 export class NodeView {
     element: HTMLElement
