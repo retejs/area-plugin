@@ -1,5 +1,5 @@
 export type ZoomSource = 'wheel' | 'touch' | 'dblclick'
-export type OnZoom = (delta: number, ox: number, oy: number, source: ZoomSource) => void
+export type OnZoom = (delta: number, ox: number, oy: number, source?: ZoomSource) => void
 
 export class Zoom {
 

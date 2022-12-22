@@ -4,7 +4,7 @@ import { Zoom, ZoomSource } from './zoom'
 
 export type Transform = Position & { k: number }
 export type TranslateEventParams = { previous: Transform, position: Position }
-export type ZoomEventParams = { previous: Transform, zoom: number, source: ZoomSource }
+export type ZoomEventParams = { previous: Transform, zoom: number, source?: ZoomSource }
 
 export class Area {
     public transform: Transform = { k: 1, x: 0, y: 0 }
@@ -85,7 +85,7 @@ export class Area {
         this.translate(x, y)
     }
 
-    private onZoom = (delta: number, ox: number, oy: number, source: ZoomSource) => {
+    private onZoom = (delta: number, ox: number, oy: number, source?: ZoomSource) => {
         this.zoom(this.transform.k * (1 + delta), ox, oy, source)
 
         this.update()
@@ -105,7 +105,7 @@ export class Area {
         return true
     }
 
-    public async zoom(zoom: number, ox = 0, oy = 0, source: ZoomSource) {
+    public async zoom(zoom: number, ox = 0, oy = 0, source?: ZoomSource) {
         const k = this.transform.k
         const params = { previous: this.transform, zoom, source }
 
