@@ -32,14 +32,16 @@ export class NodeView {
     }
 
     public translate = async (x: number, y: number) => {
+        type Params = undefined | { data: NodeTranslateEventParams }
         const previous = { ...this.position }
+        const translation = await this.canTranslate({ previous, position: { x, y } }) as Params
 
-        if (!await this.canTranslate({ previous, position: { x, y } })) return false
+        if (!translation) return false
 
-        this.position = { x, y }
-        this.element.style.transform = `translate(${x}px, ${y}px)`
+        this.position = { ...translation.data.position }
+        this.element.style.transform = `translate(${this.position.x}px, ${this.position.y}px)`
 
-        await this.translated({ position: { x, y }, previous })
+        await this.translated({ position: this.position, previous })
 
         return true
     }
