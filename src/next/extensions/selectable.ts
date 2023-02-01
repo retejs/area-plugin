@@ -4,27 +4,21 @@ import { AreaPlugin } from '..'
 
 type Schemes = GetSchemes<BaseSchemes['Node'] & { selected?: boolean }, any>
 
-function watchCtrlPressed(change?: (state: boolean) => void) {
+export function accumulateOnCtrl() {
     let pressed = false
 
     function keydown(e: KeyboardEvent) {
-        if (e.key === 'Control') {
-            pressed = true
-            change && change(true)
-        }
+        if (e.key === 'Control') pressed = true
     }
     function keyup(e: KeyboardEvent) {
-        if (e.key === 'Control') {
-            pressed = false
-            change && change(false)
-        }
+        if (e.key === 'Control') pressed = false
     }
 
     document.addEventListener('keydown', keydown)
     document.addEventListener('keyup', keyup)
 
     return {
-        isPressed() {
+        active() {
             return pressed
         },
         destroy() {
@@ -34,16 +28,56 @@ function watchCtrlPressed(change?: (state: boolean) => void) {
     }
 }
 
-type Props = {
-    translate?: (dx: number, dy: number) => void
-    unselect?: () => void
+export function selector<E extends { label: string, id: string, unselect(): void, translate(dx: number, dy: number): void }>() {
+    const entities = new Map<string, E>()
+    let pickId: string | null = null
+
+    function unselectAll() {
+        entities.forEach(item => item.unselect())
+        entities.clear()
+    }
+    return {
+        isSelected(entity: Pick<E, 'label' | 'id'>) {
+            return entities.has(`${entity.label}_${entity.id}`)
+        },
+        add(entity: E, accumulate: boolean) {
+            if (!accumulate) unselectAll()
+            entities.set(`${entity.label}_${entity.id}`, entity)
+        },
+        remove(entity: Pick<E, 'label' | 'id'>) {
+            const id = `${entity.label}_${entity.id}`
+            const item = entities.get(id)
+
+            if (item) {
+                entities.delete(id)
+                item.unselect()
+            }
+        },
+        unselectAll,
+        translate(dx: number, dy: number) {
+            entities.forEach(item => !this.isPicked(item) && item.translate(dx, dy))
+        },
+        pick(entity: Pick<E, 'label' | 'id'>) {
+            pickId = `${entity.label}_${entity.id}`
+        },
+        release() {
+            pickId = null
+        },
+        isPicked(entity: Pick<E, 'label' | 'id'>) {
+            return pickId === `${entity.label}_${entity.id}`
+        }
+    }
 }
 
-export function selectableNodes<T>(area: AreaPlugin<Schemes, T>, props?: Props) {
+export type Accumulating = {
+    active(): boolean
+}
+
+export type Selectable = ReturnType<typeof selector>
+
+export function selectableNodes<T>(area: AreaPlugin<Schemes, T>, core: Selectable, options: { accumulating: Accumulating }) {
     let editor: null | NodeEditor<Schemes> = null
     const getEditor = () => editor || (editor = area.parentScope<NodeEditor<Schemes>>(NodeEditor))
-    const ctrl = watchCtrlPressed()
-    let pickedNode: string | null = null
 
     let unselect = false
 
@@ -67,53 +101,46 @@ export function selectableNodes<T>(area: AreaPlugin<Schemes, T>, props?: Props) 
         if (context.type === 'nodepicked') {
             const pickedId = context.data.id
 
-            pickedNode = pickedId
+            const accumulate = options.accumulating.active()
+            const node = getEditor().getNode(pickedId)
 
-            getEditor().getNodes().forEach(node => {
-                if (node.id === pickedId) {
-                    selectNode(node)
-                } else if (!ctrl.isPressed()) {
-                    unselectNode(node)
-                }
-            })
-            if (!ctrl.isPressed()) props?.unselect && props.unselect()
-        } else if (context.type === 'nodetranslated') {
-            const { id, position, previous } = context.data
-            const dx = position.x - previous.x
-            const dy = position.y - previous.y
+            if (!node) return
 
-            if (pickedNode === id) {
-                getEditor().getNodes().forEach(node => {
-                    if (node.id === id) return
-                    if (!node.selected) return
-                    if (!ctrl.isPressed()) return
+            core.pick({ id: pickedId, label: 'node' })
+
+            core.add({
+                label: 'node',
+                id: node.id,
+                translate(dx, dy) {
                     const view = area.nodeViews.get(node.id)
                     const current = view?.position
 
                     if (current) {
                         view.translate(current.x + dx, current.y + dy)
                     }
-                })
-                if (props?.translate) props.translate(dx, dy)
-            }
+                },
+                unselect() {
+                    unselectNode(node)
+                }
+            }, accumulate)
+            selectNode(node)
+        } else if (context.type === 'nodetranslated') {
+            const { id, position, previous } = context.data
+            const dx = position.x - previous.x
+            const dy = position.y - previous.y
+
+            if (core.isPicked({ id, label: 'node' })) core.translate(dx, dy)
         } else if (context.type === 'pointerdown') {
             unselect = true
         } else if (context.type === 'pointermove') {
             unselect = false
         } else if (context.type === 'pointerup') {
             if (unselect) {
-                getEditor().getNodes().forEach(unselectNode)
-                props?.unselect && props.unselect()
+                core.unselectAll()
             }
             unselect = false
         }
         return context
     })
-
-    return {
-        destroy() {
-            ctrl.destroy()
-        }
-    }
 }
 
