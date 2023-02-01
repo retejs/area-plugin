@@ -2,9 +2,11 @@ import { BaseSchemes, GetSchemes, NodeEditor } from 'rete'
 
 import { AreaPlugin } from '..'
 
-type Scheme = GetSchemes<BaseSchemes['Node'] & { selected?: boolean }, any>
+type Schemes = GetSchemes<BaseSchemes['Node'] & { selected?: boolean }, any>
 
-export function selectableNodes<T>(editor: NodeEditor<Scheme>, area: AreaPlugin<Scheme, T>) {
+export function selectableNodes<T>(area: AreaPlugin<Schemes, T>) {
+    let editor: null | NodeEditor<Schemes> = null
+    const getEditor = () => editor || (editor = area.parentScope<NodeEditor<Schemes>>(NodeEditor))
     let ctrlPressed = false
     let pickedNode: string | null = null
 
@@ -27,7 +29,7 @@ export function selectableNodes<T>(editor: NodeEditor<Scheme>, area: AreaPlugin<
 
             pickedNode = pickedId
 
-            editor.getNodes().forEach(node => {
+            getEditor().getNodes().forEach(node => {
                 if (node.id === pickedId) {
                     if (!node.selected) {
                         node.selected = true
@@ -44,7 +46,7 @@ export function selectableNodes<T>(editor: NodeEditor<Scheme>, area: AreaPlugin<
             const dy = position.y - previous.y
 
             if (pickedNode === id) {
-                editor.getNodes().forEach(node => {
+                getEditor().getNodes().forEach(node => {
                     if (node.id === id) return
                     if (!node.selected) return
                     if (!ctrlPressed) return
@@ -63,7 +65,7 @@ export function selectableNodes<T>(editor: NodeEditor<Scheme>, area: AreaPlugin<
             moved = true
         } else if (context.type === 'pointerup') {
             if (unselect && !moved) {
-                editor.getNodes().forEach(node => {
+                getEditor().getNodes().forEach(node => {
                     if (node.selected) {
                         node.selected = false
                         area.renderNode(node)

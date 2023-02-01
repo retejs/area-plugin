@@ -4,9 +4,12 @@ import { AreaPlugin } from '..'
 
 type Scheme = GetSchemes<Classic.Node, Classic.Connection<Classic.Node, Classic.Node>>
 
-export function showInputControl(editor: NodeEditor<Scheme>, area: AreaPlugin<BaseSchemes, any>) {
+export function showInputControl<S extends Scheme>(area: AreaPlugin<BaseSchemes, any>) {
+    let editor: null | NodeEditor<S> = null
+    const getEditor = () => editor || (editor = area.parentScope<NodeEditor<S>>(NodeEditor))
+
     function updateInputControlVisibility(target: string, targetInput: string) {
-        const node = editor.getNode(target)
+        const node = getEditor().getNode(target)
 
         if (!node) throw new Error('cannot find node')
 
@@ -15,7 +18,7 @@ export function showInputControl(editor: NodeEditor<Scheme>, area: AreaPlugin<Ba
         if (!input) throw new Error('cannot find input')
 
         const previous = input.showControl
-        const connections = editor.getConnections()
+        const connections = getEditor().getConnections()
         const hasAnyConnection = Boolean(connections.find(connection => {
             return connection.target === target && connection.targetInput === targetInput
         }))
