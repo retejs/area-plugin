@@ -4,7 +4,9 @@ import { Area, TranslateEventParams, ZoomEventParams } from './area'
 import { NodeResizeEventParams, NodeTranslateEventParams, NodeView } from './node-view'
 import { Position } from './types'
 
+export { Area } from './area'
 export * as AreaExtensions from './extensions'
+export { NodeView } from './node-view'
 export type { PointerListener } from './utils'
 export { usePointerListener } from './utils'
 
@@ -152,7 +154,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
 
         if (element) {
             this.emit({ type: 'unmount', data: { element } })
-            this.nodeViews.delete(id)
+            this.connectionViews.delete(id)
             this.area.removeChild(element)
         }
     }
