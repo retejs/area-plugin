@@ -13,13 +13,15 @@ export function selectableNodes<T>(area: AreaPlugin<Schemes, T>) {
     let moved = false
     let unselect = false
 
-    document.addEventListener('keydown', e => {
+    function keydown(e: KeyboardEvent) {
         if (e.key === 'Control') ctrlPressed = true
-
-    })
-    document.addEventListener('keyup', e => {
+    }
+    function keyup(e: KeyboardEvent) {
         if (e.key === 'Control') ctrlPressed = false
-    })
+    }
+
+    document.addEventListener('keydown', keydown)
+    document.addEventListener('keyup', keyup)
 
     // eslint-disable-next-line max-statements
     area.addPipe(context => {
@@ -78,6 +80,11 @@ export function selectableNodes<T>(area: AreaPlugin<Schemes, T>) {
         return context
     })
 
-
+    return {
+        destroy() {
+            document.removeEventListener('keydown', keydown)
+            document.removeEventListener('keyup', keyup)
+        }
+    }
 }
 
