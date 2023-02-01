@@ -3,17 +3,18 @@ import { BaseSchemes, ClassicPreset as Classic, GetSchemes, NodeEditor } from 'r
 import { AreaPlugin } from '..'
 
 type Scheme = GetSchemes<Classic.Node, Classic.Connection<Classic.Node, Classic.Node>>
+type Visible<S extends Scheme> = (props: { hasAnyConnection: boolean, input: NonNullable<S['Node']['inputs'][string]> }) => boolean
 
-export function showInputControl<S extends Scheme>(area: AreaPlugin<BaseSchemes, any>) {
+export function showInputControl<S extends Scheme>(area: AreaPlugin<BaseSchemes, any>, visible?: Visible<S>) {
     let editor: null | NodeEditor<S> = null
     const getEditor = () => editor || (editor = area.parentScope<NodeEditor<S>>(NodeEditor))
 
     function updateInputControlVisibility(target: string, targetInput: string) {
         const node = getEditor().getNode(target)
 
-        if (!node) throw new Error('cannot find node')
+        if (!node) return
 
-        const input = (node.inputs as Record<string, Classic.Input<Classic.Socket> | undefined>)[targetInput]
+        const input = (node.inputs as Record<string, S['Node']['inputs'][string] | undefined>)[targetInput]
 
         if (!input) throw new Error('cannot find input')
 
@@ -23,7 +24,7 @@ export function showInputControl<S extends Scheme>(area: AreaPlugin<BaseSchemes,
             return connection.target === target && connection.targetInput === targetInput
         }))
 
-        input.showControl = !hasAnyConnection
+        input.showControl = visible ? visible({ hasAnyConnection, input }) : !hasAnyConnection
 
         if (input.showControl !== previous) {
             area.renderNode(node)
