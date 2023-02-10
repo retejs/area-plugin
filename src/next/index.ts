@@ -5,6 +5,7 @@ import { NodeResizeEventParams, NodeTranslateEventParams, NodeView } from './nod
 import { Position } from './types'
 
 export { Area } from './area'
+export { Drag } from './drag'
 export * as AreaExtensions from './extensions'
 export { NodeView } from './node-view'
 export type { PointerListener } from './utils'
