@@ -25,12 +25,11 @@ export class SnapGrid {
 
         node.position[0] = this.snap(x);
         node.position[1] = this.snap(y);
-        console.log(this, x, y, node.position)
-        
+
         this.editor.view.nodes.get(node).update();
         this.editor.view.updateConnections({ node });
     }
-    
+
     snap(value) {
         return Math.round(value/this.size) * this.size;
     }
