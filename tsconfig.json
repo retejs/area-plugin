@@ -1,6 +1,9 @@
 {
     "compilerOptions": {
-        "strict": true
+        "strict": true,
+        "lib": [
+            "DOM"
+        ]
     },
     "include": ["src"]
 }
