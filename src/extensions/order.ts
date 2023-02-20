@@ -17,7 +17,7 @@ export function simpleNodesOrder<T>(plugin: AreaPlugin<BaseSchemes, T>) {
       const view = plugin.connectionViews.get(context.data.id)
 
       if (view) {
-        plugin.area.element.prepend(view)
+        plugin.area.element.prepend(view.element)
       }
     }
     return context

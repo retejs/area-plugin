@@ -1,6 +1,7 @@
 import { BaseSchemes, ConnectionId, NodeId, Root, Scope } from 'rete'
 
 import { Area, TranslateEventParams, ZoomEventParams } from './area'
+import { ConnectionView } from './connection-view'
 import { ElementsHolder } from './elements-holder'
 import { NodeResizeEventParams, NodeTranslateEventParams, NodeView } from './node-view'
 import { GetRenderTypes, Position } from './types'
@@ -41,7 +42,7 @@ export type Area2DInherited<Schemes extends BaseSchemes, ExtraSignals = never> =
 
 export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> extends Scope<Area2D<Schemes> | ExtraSignals, [Root<Schemes>]> {
   nodeViews = new Map<NodeId, NodeView>()
-  connectionViews = new Map<ConnectionId, HTMLElement>()
+  public connectionViews = new Map<ConnectionId, ConnectionView>()
   area: Area
   elements = new ElementsHolder<HTMLElement, RenderData<Schemes> & RenderMeta>()
 
@@ -62,10 +63,10 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
         this.removeNodeView(context.data.id)
       }
       if (context.type === 'connectioncreated') {
-        this.addConnection(context.data)
+        this.addConnectionView(context.data)
       }
       if (context.type === 'connectionremoved') {
-        this.removeConnection(context.data.id)
+        this.removeConnectionView(context.data.id)
       }
       if (context.type === 'render') {
         this.elements.set(context.data)
@@ -129,32 +130,27 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     }
   }
 
-  private addConnection(connection: Schemes['Connection']) {
-    const element = document.createElement('div')
-
-    element.style.position = 'absolute'
-    element.style.left = '0'
-    element.style.top = '0'
-    element.addEventListener('contextmenu', event => {
-      this.emit({ type: 'contextmenu', data: { event, context: connection } })
+  private addConnectionView(connection: Schemes['Connection']) {
+    const view = new ConnectionView({
+      contextmenu: event => this.emit({ type: 'contextmenu', data: { event, context: connection } })
     })
 
-    this.connectionViews.set(connection.id, element)
-    this.area.appendChild(element)
+    this.connectionViews.set(connection.id, view)
+    this.area.appendChild(view.element)
 
     this.emit({
       type: 'render',
-      data: { element, type: 'connection', payload: connection }
+      data: { element: view.element, type: 'connection', payload: connection }
     })
   }
 
-  private removeConnection(id: ConnectionId) {
-    const element = this.connectionViews.get(id)
+  private removeConnectionView(id: ConnectionId) {
+    const view = this.connectionViews.get(id)
 
-    if (element) {
-      this.emit({ type: 'unmount', data: { element } })
+    if (view) {
+      this.emit({ type: 'unmount', data: { element: view.element } })
       this.connectionViews.delete(id)
-      this.area.removeChild(element)
+      this.area.removeChild(view.element)
     }
   }
 
