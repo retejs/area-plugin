@@ -6,6 +6,19 @@ export type Transform = Position & { k: number }
 export type TranslateEventParams = { previous: Transform, position: Position }
 export type ZoomEventParams = { previous: Transform, zoom: number, source?: ZoomSource }
 
+type Events = {
+  zoomed: (params: ZoomEventParams) => Promise<unknown>
+  pointerDown: (position: Position, event: PointerEvent) => void
+  pointerMove: (position: Position, event: PointerEvent) => void
+  pointerUp: (position: Position, event: PointerEvent) => void
+  resize: (event: Event) => void
+  translated: (params: TranslateEventParams) => Promise<unknown>
+}
+type Guards = {
+  translate: (params: TranslateEventParams) => Promise<unknown | boolean>
+  zoom: (params: ZoomEventParams) => Promise<unknown | boolean>
+}
+
 export class Area {
   public transform: Transform = { k: 1, x: 0, y: 0 }
   public pointer: Position = { x: 0, y: 0 }
@@ -14,28 +27,22 @@ export class Area {
   private zoomHandler: Zoom
   private dragHandler: Drag
 
-  constructor(
-      private container: HTMLElement,
-      private canTranslate: (params: TranslateEventParams) => Promise<unknown | boolean>,
-      private onTranslated: (params: TranslateEventParams) => Promise<unknown>,
-      private canZoom: (params: ZoomEventParams) => Promise<unknown | boolean>,
-      private onZoomed: (params: ZoomEventParams) => Promise<unknown>,
-      private onPointerDown: (position: Position, event: PointerEvent) => void,
-      private onPointerMove: (position: Position, event: PointerEvent) => void,
-      private onPointerUp: (position: Position, event: PointerEvent) => void,
-      private onResize: (event: Event) => void
-  ) {
+  constructor(private container: HTMLElement, private events: Events, private guards: Guards) {
     this.element = document.createElement('div')
     this.element.style.transformOrigin = '0 0'
 
     this.zoomHandler = new Zoom(container, this.element, 0.1, this.onZoom)
     this.dragHandler = new Drag(
       container,
-      () => this.transform,
-      () => 1,
-      () => null,
-      this.onTranslate,
-      () => null
+      {
+        getCurrentPosition: () => this.transform,
+        getZoom:  () => 1
+      },
+      {
+        start: () => null,
+        translate: this.onTranslate,
+        drag: () => null
+      }
     )
 
     this.container.addEventListener('pointerdown', this.pointerdown)
@@ -63,21 +70,21 @@ export class Area {
 
   private pointerdown = (event: PointerEvent) => {
     this.setPointerFrom(event)
-    this.onPointerDown(this.pointer, event)
+    this.events.pointerDown(this.pointer, event)
   }
 
   private pointermove = (event: PointerEvent) => {
     this.setPointerFrom(event)
-    this.onPointerMove(this.pointer, event)
+    this.events.pointerMove(this.pointer, event)
   }
 
   private pointerup = (event: PointerEvent) => {
     this.setPointerFrom(event)
-    this.onPointerUp(this.pointer, event)
+    this.events.pointerUp(this.pointer, event)
   }
 
   private resize = (event: Event) => {
-    this.onResize(event)
+    this.events.resize(event)
   }
 
   private onTranslate = (x: number, y: number) => {
@@ -94,7 +101,7 @@ export class Area {
   public async translate(x: number, y: number) {
         type T = undefined | { data: TranslateEventParams }
         const position = { x, y }
-        const result = await this.canTranslate({ previous: this.transform, position }) as T
+        const result = await this.guards.translate({ previous: this.transform, position }) as T
 
         if (!result) return false
 
@@ -103,15 +110,14 @@ export class Area {
 
         this.update()
 
-        await this.onTranslated(result.data)
+        await this.events.translated(result.data)
         return true
   }
 
-  // eslint-disable-next-line max-statements
   public async zoom(zoom: number, ox = 0, oy = 0, source?: ZoomSource) {
         type T = undefined | { data: ZoomEventParams }
         const k = this.transform.k
-        const result = await this.canZoom({ previous: this.transform, zoom, source }) as T
+        const result = await this.guards.zoom({ previous: this.transform, zoom, source }) as T
 
         if (!result) return true
 
@@ -123,7 +129,7 @@ export class Area {
 
         this.update()
 
-        await this.onZoomed(result.data)
+        await this.events.zoomed(result.data)
         return false
   }
 

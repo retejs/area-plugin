@@ -68,14 +68,18 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     })
     this.area = new Area(
       container,
-      params => this.emit({ type: 'translate', data: params }),
-      params => this.emit({ type: 'translated', data: params }),
-      params => this.emit({ type: 'zoom', data: params }),
-      params => this.emit({ type: 'zoomed', data: params }),
-      (position, event) => this.emit({ type: 'pointerdown', data: { position, event } }),
-      (position, event) => this.emit({ type: 'pointermove', data: { position, event } }),
-      (position, event) => this.emit({ type: 'pointerup', data: { position, event } }),
-      event => this.emit({ type: 'resized', data: { event } })
+      {
+        zoomed: params => this.emit({ type: 'zoomed', data: params }),
+        pointerDown: (position, event) => this.emit({ type: 'pointerdown', data: { position, event } }),
+        pointerMove: (position, event) => this.emit({ type: 'pointermove', data: { position, event } }),
+        pointerUp: (position, event) => this.emit({ type: 'pointerup', data: { position, event } }),
+        resize: event => this.emit({ type: 'resized', data: { event } }),
+        translated: params => this.emit({ type: 'translated', data: params })
+      },
+      {
+        translate: params => this.emit({ type: 'translate', data: params }),
+        zoom: params => this.emit({ type: 'zoom', data: params })
+      }
     )
     container.appendChild(this.area.element)
   }
@@ -84,10 +88,14 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     const id = node.id
     const view = new NodeView(
       () => this.area.transform.k,
-      () => this.emit({ type: 'nodepicked', data: { id } }),
-      data => this.emit({ type: 'nodetranslate', data: { id, ...data } }),
-      data => this.emit({ type: 'nodetranslated', data: { id, ...data } }),
-      () => this.emit({ type: 'nodedragged', data: node })
+      {
+        picked: () => this.emit({ type: 'nodepicked', data: { id } }),
+        translated: data => this.emit({ type: 'nodetranslated', data: { id, ...data } }),
+        dragged: () => this.emit({ type: 'nodedragged', data: node })
+      },
+      {
+        translate: data => this.emit({ type: 'nodetranslate', data: { id, ...data } })
+      }
     )
 
     view.element.addEventListener('contextmenu', event => {

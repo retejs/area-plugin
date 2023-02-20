@@ -1,19 +1,23 @@
 import { Position } from './types'
 import { PointerListener, usePointerListener } from './utils'
 
+type Events = {
+  start: (e: PointerEvent) => void
+  translate: (x: number, y: number, e: PointerEvent) => void
+  drag: (e: PointerEvent) => void
+}
+
+type DragConfig = {
+  getCurrentPosition: () => Position
+  getZoom: () => number
+}
+
 export class Drag {
   private pointerStart?: Position
   private startPosition?: Position
   private pointerListener: PointerListener
 
-  constructor(
-      private element: HTMLElement,
-      private getCurrentPosition: () => Position,
-      private getZoom: () => number,
-      private onStart: (e: PointerEvent) => void,
-      private onTranslate: (x: number, y: number, e: PointerEvent) => void,
-      private onDrag: (e: PointerEvent) => void
-  ) {
+  constructor(private element: HTMLElement, private config: DragConfig, private events: Events) {
     this.element.style.touchAction = 'none'
     this.pointerListener = usePointerListener(this.element, {
       down: this.down,
@@ -27,9 +31,9 @@ export class Drag {
 
     e.stopPropagation()
     this.pointerStart = { x: e.pageX, y: e.pageY }
-    this.startPosition = { ...this.getCurrentPosition() }
+    this.startPosition = { ...this.config.getCurrentPosition() }
 
-    this.onStart(e)
+    this.events.start(e)
   }
 
   private move = (e: PointerEvent) => {
@@ -40,18 +44,18 @@ export class Drag {
       x: e.pageX - this.pointerStart.x,
       y: e.pageY - this.pointerStart.y
     }
-    const zoom = this.getZoom()
+    const zoom = this.config.getZoom()
     const x = this.startPosition.x + delta.x / zoom
     const y = this.startPosition.y + delta.y / zoom
 
-    this.onTranslate(x, y, e)
+    this.events.translate(x, y, e)
   }
 
   private up = (e: PointerEvent) => {
     if (!this.pointerStart) return
 
     delete this.pointerStart
-    this.onDrag(e)
+    this.events.drag(e)
   }
 
   public destroy() {
