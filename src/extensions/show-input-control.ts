@@ -27,7 +27,7 @@ export function showInputControl<S extends Scheme>(area: AreaPlugin<BaseSchemes,
     input.showControl = visible ? visible({ hasAnyConnection, input }) : !hasAnyConnection
 
     if (input.showControl !== previous) {
-      area.renderNode(node)
+      area.update('node', node.id)
     }
   }
 

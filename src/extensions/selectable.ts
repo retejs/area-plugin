@@ -84,14 +84,14 @@ export function selectableNodes<T>(area: AreaPlugin<Schemes, T>, core: Selectabl
   function selectNode(node: Schemes['Node']) {
     if (!node.selected) {
       node.selected = true
-      area.renderNode(node)
+      area.update('node', node.id)
     }
   }
 
   function unselectNode(node: Schemes['Node']) {
     if (node.selected) {
       node.selected = false
-      area.renderNode(node)
+      area.update('node', node.id)
     }
   }
 

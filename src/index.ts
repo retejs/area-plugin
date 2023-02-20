@@ -1,8 +1,9 @@
 import { BaseSchemes, ConnectionId, NodeId, Root, Scope } from 'rete'
 
 import { Area, TranslateEventParams, ZoomEventParams } from './area'
+import { ElementsHolder } from './elements-holder'
 import { NodeResizeEventParams, NodeTranslateEventParams, NodeView } from './node-view'
-import { Position } from './types'
+import { GetRenderTypes, Position } from './types'
 
 export { Area } from './area'
 export { Drag } from './drag'
@@ -39,9 +40,10 @@ export type Area2D<Schemes extends BaseSchemes> =
 export type Area2DInherited<Schemes extends BaseSchemes, ExtraSignals = never> = [Area2D<Schemes> | ExtraSignals, Root<Schemes>]
 
 export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> extends Scope<Area2D<Schemes> | ExtraSignals, [Root<Schemes>]> {
-  nodeViews = new Map<NodeId, NodeView>
-  connectionViews = new Map<ConnectionId, HTMLElement>
+  nodeViews = new Map<NodeId, NodeView>()
+  connectionViews = new Map<ConnectionId, HTMLElement>()
   area: Area
+  elements = new ElementsHolder<HTMLElement, RenderData<Schemes> & RenderMeta>()
 
   constructor(public container: HTMLElement) {
     super('area')
@@ -50,6 +52,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     container.addEventListener('contextmenu', event => {
       this.emit({ type: 'contextmenu', data: { event, context: 'root' } })
     })
+    // eslint-disable-next-line max-statements
     this.addPipe(context => {
       if (!context || !(typeof context === 'object' && 'type' in context)) return context
       if (context.type === 'nodecreated') {
@@ -63,6 +66,12 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
       }
       if (context.type === 'connectionremoved') {
         this.removeConnection(context.data.id)
+      }
+      if (context.type === 'render') {
+        this.elements.set(context.data)
+      }
+      if (context.type === 'unmount') {
+        this.elements.delete(context.data.element)
       }
       return context
     })
@@ -81,7 +90,6 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
         zoom: params => this.emit({ type: 'zoom', data: params })
       }
     )
-    container.appendChild(this.area.element)
   }
 
   private addNodeView(node: Schemes['Node']) {
@@ -105,18 +113,10 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     this.nodeViews.set(node.id, view)
     this.area.appendChild(view.element)
 
-    this.renderNode(node)
-  }
-
-  public renderNode(node: Schemes['Node']) {
-    const view = this.nodeViews.get(node.id)
-
-    if (view) {
-      this.emit({
-        type: 'render',
-        data: { element: view.element, type: 'node', payload: node }
-      })
-    }
+    this.emit({
+      type: 'render',
+      data: { element: view.element, type: 'node', payload: node }
+    })
   }
 
   private removeNodeView(id: NodeId) {
@@ -142,18 +142,10 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     this.connectionViews.set(connection.id, element)
     this.area.appendChild(element)
 
-    this.renderConnection(connection)
-  }
-
-  public renderConnection(connection: Schemes['Connection']) {
-    const element = this.connectionViews.get(connection.id)
-
-    if (element) {
-      this.emit({
-        type: 'render',
-        data: { element, type: 'connection', payload: connection }
-      })
-    }
+    this.emit({
+      type: 'render',
+      data: { element, type: 'connection', payload: connection }
+    })
   }
 
   private removeConnection(id: ConnectionId) {
@@ -164,6 +156,12 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
       this.connectionViews.delete(id)
       this.area.removeChild(element)
     }
+  }
+
+  public update(type: GetRenderTypes<Area2D<Schemes>> | GetRenderTypes<ExtraSignals>, id: string) {
+    const data = this.elements.get(type, id)
+
+    if (data) this.emit({ type: 'render', data })
   }
 
   public destroy() {

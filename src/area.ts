@@ -50,6 +50,7 @@ export class Area {
     window.addEventListener('pointerup', this.pointerup)
     window.addEventListener('resize', this.resize)
 
+    container.appendChild(this.element)
     this.update()
   }
 
