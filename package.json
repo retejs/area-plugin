@@ -4,8 +4,6 @@
   "description": "",
   "scripts": {
     "build": "rete build -c rete.config.ts",
-    "build:dev": "rete build -c rete.config.ts --watch",
-    "prepublishOnly": "npm run build",
     "lint": "rete lint"
   },
   "author": "Vitaliy Stoliarov",
@@ -18,8 +16,8 @@
     "rete": "file:../rete/dist/package.tgz"
   },
   "devDependencies": {
-    "rete-cli": "^1.0.0-beta.18",
     "rete": "file:../rete/dist/package.tgz",
+    "rete-cli": "^1.0.0-beta.24",
     "rollup-plugin-sass": "^0.9.2"
   }
 }
