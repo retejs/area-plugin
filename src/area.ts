@@ -100,38 +100,38 @@ export class Area {
   }
 
   public async translate(x: number, y: number) {
-        type T = undefined | { data: TranslateEventParams }
-        const position = { x, y }
-        const result = await this.guards.translate({ previous: this.transform, position }) as T
+    type T = undefined | { data: TranslateEventParams }
+    const position = { x, y }
+    const result = await this.guards.translate({ previous: this.transform, position }) as T
 
-        if (!result) return false
+    if (!result) return false
 
-        this.transform.x = result.data.position.x
-        this.transform.y = result.data.position.y
+    this.transform.x = result.data.position.x
+    this.transform.y = result.data.position.y
 
-        this.update()
+    this.update()
 
-        await this.events.translated(result.data)
-        return true
+    await this.events.translated(result.data)
+    return true
   }
 
   public async zoom(zoom: number, ox = 0, oy = 0, source?: ZoomSource) {
-        type T = undefined | { data: ZoomEventParams }
-        const k = this.transform.k
-        const result = await this.guards.zoom({ previous: this.transform, zoom, source }) as T
+    type T = undefined | { data: ZoomEventParams }
+    const k = this.transform.k
+    const result = await this.guards.zoom({ previous: this.transform, zoom, source }) as T
 
-        if (!result) return true
+    if (!result) return true
 
-        const d = (k - result.data.zoom) / ((k - zoom) || 1)
+    const d = (k - result.data.zoom) / ((k - zoom) || 1)
 
-        this.transform.k = result.data.zoom || 1
-        this.transform.x += ox * d
-        this.transform.y += oy * d
+    this.transform.k = result.data.zoom || 1
+    this.transform.x += ox * d
+    this.transform.y += oy * d
 
-        this.update()
+    this.update()
 
-        await this.events.zoomed(result.data)
-        return false
+    await this.events.zoomed(result.data)
+    return false
   }
 
   public appendChild(el: HTMLElement) {
