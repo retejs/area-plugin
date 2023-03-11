@@ -4,11 +4,19 @@ export type OnZoom = (delta: number, ox: number, oy: number, source?: ZoomSource
 export class Zoom {
   previous: { cx: number, cy: number, distance: number } | null = null
   pointers: PointerEvent[] = []
+  private container!: HTMLElement
+  private element!: HTMLElement
+  private onzoom!: OnZoom
 
-  constructor(private container: HTMLElement, private element: HTMLElement, private intensity: number, private onzoom: OnZoom) {
-    container.addEventListener('wheel', this.wheel)
-    container.addEventListener('pointerdown', this.down)
-    container.addEventListener('dblclick', this.dblclick)
+  constructor(private intensity: number) {}
+
+  public initialize(container: HTMLElement, element: HTMLElement, onzoom: OnZoom) {
+    this.container = container
+    this.element = element
+    this.onzoom = onzoom
+    this.container.addEventListener('wheel', this.wheel)
+    this.container.addEventListener('pointerdown', this.down)
+    this.container.addEventListener('dblclick', this.dblclick)
 
     window.addEventListener('pointermove', this.move)
     window.addEventListener('pointerup', this.up)

@@ -24,14 +24,14 @@ export class Area {
   public pointer: Position = { x: 0, y: 0 }
   public element: HTMLElement
 
-  private zoomHandler: Zoom
+  private zoomHandler: Zoom | null = null
   private dragHandler: Drag
 
   constructor(private container: HTMLElement, private events: Events, private guards: Guards) {
     this.element = document.createElement('div')
     this.element.style.transformOrigin = '0 0'
 
-    this.zoomHandler = new Zoom(container, this.element, 0.1, this.onZoom)
+    this.setZoomHandler(new Zoom(0.1))
     this.dragHandler = new Drag(
       container,
       {
@@ -58,6 +58,12 @@ export class Area {
     const { x, y, k } = this.transform
 
     this.element.style.transform = `translate(${x}px, ${y}px) scale(${k})`
+  }
+
+  public setZoomHandler(zoom: Zoom | null) {
+    if (this.zoomHandler) this.zoomHandler.destroy()
+    this.zoomHandler = zoom
+    if (this.zoomHandler) this.zoomHandler.initialize(this.container, this.element, this.onZoom)
   }
 
   public setPointerFrom(event: MouseEvent) {
@@ -89,7 +95,7 @@ export class Area {
   }
 
   private onTranslate = (x: number, y: number) => {
-    if (this.zoomHandler.isTranslating()) return // lock translation while zoom on multitouch
+    if (this.zoomHandler && this.zoomHandler.isTranslating()) return // lock translation while zoom on multitouch
     this.translate(x, y)
   }
 
@@ -148,6 +154,6 @@ export class Area {
     window.removeEventListener('pointerup', this.pointerup)
     window.removeEventListener('resize', this.resize)
     this.dragHandler.destroy()
-    this.zoomHandler.destroy()
+    if (this.zoomHandler) this.zoomHandler.destroy()
   }
 }

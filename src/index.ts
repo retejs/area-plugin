@@ -12,6 +12,7 @@ export * as AreaExtensions from './extensions'
 export { NodeView } from './node-view'
 export type { PointerListener } from './utils'
 export { usePointerListener } from './utils'
+export { Zoom } from './zoom'
 
 export type RenderMeta = { filled?: boolean }
 export type RenderData<Schemes extends BaseSchemes> =
