@@ -29,7 +29,8 @@ export class NodeView {
 
     this.element.addEventListener('contextmenu', event => this.events.contextmenu(event))
 
-    this.dragHandler = new Drag(
+    this.dragHandler = new Drag()
+    this.dragHandler.initialize(
       this.element,
       {
         getCurrentPosition: () => this.position,

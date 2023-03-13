@@ -25,25 +25,14 @@ export class Area {
   public element: HTMLElement
 
   private zoomHandler: Zoom | null = null
-  private dragHandler: Drag
+  private dragHandler: Drag | null = null
 
   constructor(private container: HTMLElement, private events: Events, private guards: Guards) {
     this.element = document.createElement('div')
     this.element.style.transformOrigin = '0 0'
 
     this.setZoomHandler(new Zoom(0.1))
-    this.dragHandler = new Drag(
-      container,
-      {
-        getCurrentPosition: () => this.transform,
-        getZoom:  () => 1
-      },
-      {
-        start: () => null,
-        translate: this.onTranslate,
-        drag: () => null
-      }
-    )
+    this.setDragHandler(new Drag())
 
     this.container.addEventListener('pointerdown', this.pointerdown)
     this.container.addEventListener('pointermove', this.pointermove)
@@ -58,6 +47,23 @@ export class Area {
     const { x, y, k } = this.transform
 
     this.element.style.transform = `translate(${x}px, ${y}px) scale(${k})`
+  }
+
+  public setDragHandler(drag: Drag | null) {
+    if (this.dragHandler) this.dragHandler.destroy()
+    this.dragHandler = drag
+    if (this.dragHandler) this.dragHandler.initialize(
+      this.container,
+      {
+        getCurrentPosition: () => this.transform,
+        getZoom:  () => 1
+      },
+      {
+        start: () => null,
+        translate: this.onTranslate,
+        drag: () => null
+      }
+    )
   }
 
   public setZoomHandler(zoom: Zoom | null) {
@@ -153,7 +159,7 @@ export class Area {
     this.container.removeEventListener('pointermove', this.pointermove)
     window.removeEventListener('pointerup', this.pointerup)
     window.removeEventListener('resize', this.resize)
-    this.dragHandler.destroy()
+    if (this.dragHandler) this.dragHandler.destroy()
     if (this.zoomHandler) this.zoomHandler.destroy()
   }
 }
