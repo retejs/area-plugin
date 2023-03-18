@@ -1,3 +1,4 @@
+import { Content } from './content'
 import { Drag } from './drag'
 import { Position } from './types'
 import { Zoom, ZoomSource } from './zoom'
@@ -13,6 +14,7 @@ type Events = {
   pointerUp: (position: Position, event: PointerEvent) => void
   resize: (event: Event) => void
   translated: (params: TranslateEventParams) => Promise<unknown>
+  reordered: (element: HTMLElement) => Promise<unknown>
 }
 type Guards = {
   translate: (params: TranslateEventParams) => Promise<unknown | boolean>
@@ -22,14 +24,14 @@ type Guards = {
 export class Area {
   public transform: Transform = { k: 1, x: 0, y: 0 }
   public pointer: Position = { x: 0, y: 0 }
-  public element: HTMLElement
+  public content: Content
 
   private zoomHandler: Zoom | null = null
   private dragHandler: Drag | null = null
 
   constructor(private container: HTMLElement, private events: Events, private guards: Guards) {
-    this.element = document.createElement('div')
-    this.element.style.transformOrigin = '0 0'
+    this.content = new Content(element => this.events.reordered(element))
+    this.content.holder.style.transformOrigin = '0 0'
 
     this.setZoomHandler(new Zoom(0.1))
     this.setDragHandler(new Drag())
@@ -39,14 +41,14 @@ export class Area {
     window.addEventListener('pointerup', this.pointerup)
     window.addEventListener('resize', this.resize)
 
-    container.appendChild(this.element)
+    container.appendChild(this.content.holder)
     this.update()
   }
 
   private update() {
     const { x, y, k } = this.transform
 
-    this.element.style.transform = `translate(${x}px, ${y}px) scale(${k})`
+    this.content.holder.style.transform = `translate(${x}px, ${y}px) scale(${k})`
   }
 
   public setDragHandler(drag: Drag | null) {
@@ -69,14 +71,12 @@ export class Area {
   public setZoomHandler(zoom: Zoom | null) {
     if (this.zoomHandler) this.zoomHandler.destroy()
     this.zoomHandler = zoom
-    if (this.zoomHandler) this.zoomHandler.initialize(this.container, this.element, this.onZoom)
+    if (this.zoomHandler) this.zoomHandler.initialize(this.container, this.content.holder, this.onZoom)
   }
 
   public setPointerFrom(event: MouseEvent) {
-    const { left, top } = this.element.getBoundingClientRect()
-    const x = event.clientX - left
-    const y = event.clientY - top
-    const k = this.transform.k
+    const { x, y } = this.content.getPointerFrom(event)
+    const { k } = this.transform
 
     this.pointer = { x: x / k, y: y / k }
   }
@@ -144,14 +144,6 @@ export class Area {
 
     await this.events.zoomed(result.data)
     return false
-  }
-
-  public appendChild(el: HTMLElement) {
-    this.element.appendChild(el)
-  }
-
-  public removeChild(el: HTMLElement) {
-    this.element.removeChild(el)
   }
 
   public destroy() {

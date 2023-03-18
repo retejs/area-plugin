@@ -39,6 +39,7 @@ export type Area2D<Schemes extends BaseSchemes> =
     | { type: 'resized', data: { event: Event } }
     | { type: 'noderesize', data: { id: string } & NodeResizeEventParams }
     | { type: 'noderesized', data: { id: string } & NodeResizeEventParams }
+    | { type: 'reordered', data: { element: HTMLElement } }
 
 export type Area2DInherited<Schemes extends BaseSchemes, ExtraSignals = never> = [Area2D<Schemes> | ExtraSignals, Root<Schemes>]
 
@@ -86,7 +87,8 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
         pointerMove: (position, event) => this.emit({ type: 'pointermove', data: { position, event } }),
         pointerUp: (position, event) => this.emit({ type: 'pointerup', data: { position, event } }),
         resize: event => this.emit({ type: 'resized', data: { event } }),
-        translated: params => this.emit({ type: 'translated', data: params })
+        translated: params => this.emit({ type: 'translated', data: params }),
+        reordered: element => this.emit({ type: 'reordered', data: { element } })
       },
       {
         translate: params => this.emit({ type: 'translate', data: params }),
@@ -113,7 +115,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     )
 
     this.nodeViews.set(id, view)
-    this.area.appendChild(view.element)
+    this.area.content.add(view.element)
 
     this.emit({
       type: 'render',
@@ -127,7 +129,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     if (view) {
       this.emit({ type: 'unmount', data: { element: view.element } })
       this.nodeViews.delete(id)
-      this.area.removeChild(view.element)
+      this.area.content.remove(view.element)
     }
   }
 
@@ -137,7 +139,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     })
 
     this.connectionViews.set(connection.id, view)
-    this.area.appendChild(view.element)
+    this.area.content.add(view.element)
 
     this.emit({
       type: 'render',
@@ -151,7 +153,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     if (view) {
       this.emit({ type: 'unmount', data: { element: view.element } })
       this.connectionViews.delete(id)
-      this.area.removeChild(view.element)
+      this.area.content.remove(view.element)
     }
   }
 
