@@ -9,7 +9,7 @@ Rete.js Area plugin
 
 - **Zooming**: allows users to zoom in and out on the content of the graph
 - **Dragging**: enables users to move nodes or elements of the graph
-- **Extensions**: additional features that can be added to the graph to enhance its functionality
+- **Extensions**:
   - **selectable**: allows users to select nodes or elements of the graph
   - **snap**: snaps nodes or elements of the graph to a grid or other predetermined alignment
   - **restrictor**: limits a zooming and dragging of area
