@@ -1,6 +1,6 @@
 {
   "name": "rete-area-plugin",
-  "version": "2.0.0-beta.5",
+  "version": "2.0.0-beta.7",
   "description": "",
   "scripts": {
     "build": "rete build -c rete.config.ts",
@@ -26,7 +26,10 @@
   },
   "devDependencies": {
     "rete": "^2.0.0-beta.1",
-    "rete-cli": "^1.0.0-beta.26",
+    "rete-cli": "^1.0.0-beta.29",
     "rollup-plugin-sass": "^0.9.2"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.21.0"
   }
 }
