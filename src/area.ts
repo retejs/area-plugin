@@ -153,5 +153,6 @@ export class Area {
     window.removeEventListener('resize', this.resize)
     if (this.dragHandler) this.dragHandler.destroy()
     if (this.zoomHandler) this.zoomHandler.destroy()
+    this.content.holder.innerHTML = ''
   }
 }

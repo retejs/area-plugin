@@ -52,10 +52,8 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
   constructor(public container: HTMLElement) {
     super('area')
     container.style.overflow = 'hidden'
+    container.addEventListener('contextmenu', this.onContextMenu)
 
-    container.addEventListener('contextmenu', event => {
-      this.emit({ type: 'contextmenu', data: { event, context: 'root' } })
-    })
     // eslint-disable-next-line max-statements
     this.addPipe(context => {
       if (!context || !(typeof context === 'object' && 'type' in context)) return context
@@ -95,6 +93,10 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
         zoom: params => this.emit({ type: 'zoom', data: params })
       }
     )
+  }
+
+  private onContextMenu = (event: MouseEvent) => {
+    this.emit({ type: 'contextmenu', data: { event, context: 'root' } })
   }
 
   private addNodeView(node: Schemes['Node']) {
@@ -176,6 +178,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
   }
 
   public destroy() {
+    this.container.removeEventListener('contextmenu', this.onContextMenu)
     this.area.destroy()
     this.nodeViews.forEach(node => node.destroy())
   }
