@@ -179,7 +179,8 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
 
   public destroy() {
     this.container.removeEventListener('contextmenu', this.onContextMenu)
+    Array.from(this.connectionViews.keys()).forEach(id => this.removeConnectionView(id))
+    Array.from(this.nodeViews.keys()).forEach(id => this.removeNodeView(id))
     this.area.destroy()
-    this.nodeViews.forEach(node => node.destroy())
   }
 }
