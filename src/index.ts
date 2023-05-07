@@ -1,29 +1,25 @@
 import { BaseSchemes, ConnectionId, NodeId, Root, Scope } from 'rete'
 
+// type BaseSchemes, ConnectionId, NodeId, Root, Scope
 import { Area, TranslateEventParams, ZoomEventParams } from './area'
 import { ConnectionView } from './connection-view'
 import { ElementsHolder } from './elements-holder'
 import { NodeResizeEventParams, NodeTranslateEventParams, NodeView } from './node-view'
-import { GetRenderTypes, Position } from './types'
+import { GetRenderTypes, Position, RenderMeta, RenderSignal } from './types'
 
 export { Area } from './area'
 export { Drag } from './drag'
 export * as AreaExtensions from './extensions'
 export { NodeView } from './node-view'
+export type { RenderSignal } from './types'
 export type { PointerListener } from './utils'
 export { usePointerListener } from './utils'
 export { Zoom } from './zoom'
-
-export type RenderMeta = { filled?: boolean }
-export type RenderData<Schemes extends BaseSchemes> =
-| { element: HTMLElement, type: 'node', payload: Schemes['Node'] }
-| { element: HTMLElement, type: 'connection', payload: Schemes['Connection'], start?: Position, end?: Position }
 
 export type Area2D<Schemes extends BaseSchemes> =
     | { type: 'nodepicked', data: { id: string } }
     | { type: 'nodetranslate', data: { id: string } & NodeTranslateEventParams }
     | { type: 'nodetranslated', data: { id: string } & NodeTranslateEventParams }
-    | { type: 'translate', data: { position: Position } }
     | { type: 'contextmenu', data: { event: MouseEvent, context: 'root' | Schemes['Node'] | Schemes['Connection'] } }
     | { type: 'pointerdown', data: { position: Position, event: PointerEvent }}
     | { type: 'pointermove', data: { position: Position, event: PointerEvent }}
@@ -32,8 +28,8 @@ export type Area2D<Schemes extends BaseSchemes> =
     | { type: 'translated', data: TranslateEventParams }
     | { type: 'zoom', data: ZoomEventParams }
     | { type: 'zoomed', data: ZoomEventParams }
-    | { type: 'render', data: RenderData<Schemes> & RenderMeta }
-    | { type: 'rendered', data: RenderData<Schemes> & RenderMeta }
+    | RenderSignal<'node', { payload: Schemes['Node'] }>
+    | RenderSignal<'connection', { payload: Schemes['Connection'], start?: Position, end?: Position }>
     | { type: 'unmount', data: { element: HTMLElement } }
     | { type: 'nodedragged', data: Schemes['Node'] }
     | { type: 'resized', data: { event: Event } }
@@ -47,7 +43,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
   public nodeViews = new Map<NodeId, NodeView>()
   public connectionViews = new Map<ConnectionId, ConnectionView>()
   public area: Area
-  private elements = new ElementsHolder<HTMLElement, RenderData<Schemes> & RenderMeta>()
+  private elements = new ElementsHolder<HTMLElement, Extract<Area2D<Schemes>, { type: 'render' }>['data'] & RenderMeta>()
 
   constructor(public container: HTMLElement) {
     super('area')
@@ -162,7 +158,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
   public async update(type: GetRenderTypes<Area2D<Schemes>> | GetRenderTypes<ExtraSignals>, id: string) {
     const data = this.elements.get(type, id)
 
-    if (data) await this.emit({ type: 'render', data })
+    if (data) await this.emit({ type: 'render', data } as Area2D<Schemes>)
   }
 
   public async resize(id: NodeId, width: number, height: number) {

@@ -95,9 +95,10 @@ export function selectableNodes<T>(area: AreaPlugin<Schemes, T>, core: Selectabl
     }
   }
 
-  // eslint-disable-next-line max-statements
+  // eslint-disable-next-line max-statements, complexity
   area.addPipe(context => {
-    if (!('type' in context)) return context
+    if (!context || typeof context !== 'object' || !('type' in context)) return context
+
     if (context.type === 'nodepicked') {
       const pickedId = context.data.id
 

@@ -4,7 +4,8 @@ import { AreaPlugin } from '..'
 
 export function simpleNodesOrder<T>(plugin: AreaPlugin<BaseSchemes, T>) {
   plugin.addPipe(context => {
-    if (!('type' in context)) return context
+    if (!context || typeof context !== 'object' || !('type' in context)) return context
+
     if (context.type === 'nodepicked') {
       const view = plugin.nodeViews.get(context.data.id)
       const { content } = plugin.area
