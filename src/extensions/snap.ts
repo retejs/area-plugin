@@ -1,8 +1,9 @@
 import { BaseSchemes } from 'rete'
 
-import { AreaPlugin } from '..'
+import { BaseArea, BaseAreaPlugin } from '../base'
 
-export function snapGrid<Schemes extends BaseSchemes, K>(plugin: AreaPlugin<Schemes, K>, params?: { size?: number, dynamic?: boolean }) {
+export function snapGrid<Schemes extends BaseSchemes, K>(base: BaseAreaPlugin<Schemes, K>, params?: { size?: number, dynamic?: boolean }) {
+  const area = base as BaseAreaPlugin<Schemes, BaseArea<Schemes>>
   const size = typeof params?.size === 'undefined' ? 16 : params.size
   const dynamic = typeof params?.dynamic === 'undefined' ? true : params.dynamic
 
@@ -10,8 +11,7 @@ export function snapGrid<Schemes extends BaseSchemes, K>(plugin: AreaPlugin<Sche
     return Math.round(value / size) * size
   }
 
-  // eslint-disable-next-line max-statements
-  plugin.addPipe(context => {
+  area.addPipe(context => {
     if (!context || typeof context !== 'object' || !('type' in context)) return context
     if (dynamic && context.type === 'nodetranslate') {
       const { position } = context.data
@@ -27,7 +27,7 @@ export function snapGrid<Schemes extends BaseSchemes, K>(plugin: AreaPlugin<Sche
       }
     }
     if (!dynamic && context.type === 'nodedragged') {
-      const view = plugin.nodeViews.get(context.data.id)
+      const view = area.nodeViews.get(context.data.id)
 
       if (view) {
         const { x, y } = view.position

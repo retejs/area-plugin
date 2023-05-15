@@ -66,12 +66,14 @@ export class NodeView {
 
     const el = this.element.children.item(0)
 
-    if (!el || !(el instanceof HTMLElement)) return
+    if (!el || !(el instanceof HTMLElement)) return false
 
     el.style.width = `${width}px`
     el.style.height = `${height}px`
 
     await this.events.resized({ size })
+
+    return true
   }
 
   public destroy() {

@@ -4,11 +4,11 @@ import { AreaPlugin } from '..'
 import { Position } from '../types'
 
 type ScaleRange = { min: number, max: number }
-type TranslataRange = { left: number, top: number, right: number, bottom: number }
+type TranslateRange = { left: number, top: number, right: number, bottom: number }
 
 type Params = {
   scaling?: ScaleRange | (() => ScaleRange) | boolean
-  translation?: TranslataRange | (() => TranslataRange) | boolean
+  translation?: TranslateRange | (() => TranslateRange) | boolean
 }
 
 export function restrictor<Schemes extends BaseSchemes, K>(plugin: AreaPlugin<Schemes, K>, params?: Params) {

@@ -1,11 +1,11 @@
 import { BaseSchemes, ClassicPreset as Classic, GetSchemes, NodeEditor } from 'rete'
 
-import { AreaPlugin } from '..'
+import { BaseAreaPlugin } from '../base'
 
 type Scheme = GetSchemes<Classic.Node, Classic.Connection<Classic.Node, Classic.Node>>
 type Visible<S extends Scheme> = (props: { hasAnyConnection: boolean, input: NonNullable<S['Node']['inputs'][string]> }) => boolean
 
-export function showInputControl<S extends Scheme>(area: AreaPlugin<BaseSchemes, any>, visible?: Visible<S>) {
+export function showInputControl<S extends Scheme>(area: BaseAreaPlugin<BaseSchemes, any>, visible?: Visible<S>) {
   let editor: null | NodeEditor<S> = null
   const getEditor = () => editor || (editor = area.parentScope<NodeEditor<S>>(NodeEditor))
 

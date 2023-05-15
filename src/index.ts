@@ -1,13 +1,15 @@
-import { BaseSchemes, ConnectionId, NodeId, Root, Scope } from 'rete'
+import { BaseSchemes, ConnectionId, NodeId, Root } from 'rete'
 
-// type BaseSchemes, ConnectionId, NodeId, Root, Scope
 import { Area, TranslateEventParams, ZoomEventParams } from './area'
+import { BaseArea, BaseAreaPlugin } from './base'
 import { ConnectionView } from './connection-view'
 import { ElementsHolder } from './elements-holder'
-import { NodeResizeEventParams, NodeTranslateEventParams, NodeView } from './node-view'
-import { GetRenderTypes, Position, RenderMeta, RenderSignal } from './types'
+import { NodeView } from './node-view'
+import { GetRenderTypes, Position, RenderMeta } from './types'
 
 export { Area } from './area'
+export type { BaseArea } from './base'
+export { BaseAreaPlugin } from './base'
 export { Drag } from './drag'
 export * as AreaExtensions from './extensions'
 export { NodeView } from './node-view'
@@ -17,29 +19,16 @@ export { usePointerListener } from './utils'
 export { Zoom } from './zoom'
 
 export type Area2D<Schemes extends BaseSchemes> =
-    | { type: 'nodepicked', data: { id: string } }
-    | { type: 'nodetranslate', data: { id: string } & NodeTranslateEventParams }
-    | { type: 'nodetranslated', data: { id: string } & NodeTranslateEventParams }
-    | { type: 'contextmenu', data: { event: MouseEvent, context: 'root' | Schemes['Node'] | Schemes['Connection'] } }
-    | { type: 'pointerdown', data: { position: Position, event: PointerEvent }}
-    | { type: 'pointermove', data: { position: Position, event: PointerEvent }}
-    | { type: 'pointerup', data: { position: Position, event: PointerEvent }}
-    | { type: 'translate', data: TranslateEventParams }
-    | { type: 'translated', data: TranslateEventParams }
-    | { type: 'zoom', data: ZoomEventParams }
-    | { type: 'zoomed', data: ZoomEventParams }
-    | RenderSignal<'node', { payload: Schemes['Node'] }>
-    | RenderSignal<'connection', { payload: Schemes['Connection'], start?: Position, end?: Position }>
-    | { type: 'unmount', data: { element: HTMLElement } }
-    | { type: 'nodedragged', data: Schemes['Node'] }
-    | { type: 'resized', data: { event: Event } }
-    | { type: 'noderesize', data: { id: string } & NodeResizeEventParams }
-    | { type: 'noderesized', data: { id: string } & NodeResizeEventParams }
-    | { type: 'reordered', data: { element: HTMLElement } }
+  | BaseArea<Schemes>
+  | { type: 'translate', data: TranslateEventParams }
+  | { type: 'translated', data: TranslateEventParams }
+  | { type: 'zoom', data: ZoomEventParams }
+  | { type: 'zoomed', data: ZoomEventParams }
+  | { type: 'resized', data: { event: Event } }
 
 export type Area2DInherited<Schemes extends BaseSchemes, ExtraSignals = never> = [Area2D<Schemes> | ExtraSignals, Root<Schemes>]
 
-export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> extends Scope<Area2D<Schemes> | ExtraSignals, [Root<Schemes>]> {
+export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> extends BaseAreaPlugin<Schemes, Area2D<Schemes> | ExtraSignals> {
   public nodeViews = new Map<NodeId, NodeView>()
   public connectionViews = new Map<ConnectionId, ConnectionView>()
   public area: Area
@@ -95,7 +84,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     this.emit({ type: 'contextmenu', data: { event, context: 'root' } })
   }
 
-  private addNodeView(node: Schemes['Node']) {
+  public addNodeView(node: Schemes['Node']) {
     const { id } = node
     const view = new NodeView(
       () => this.area.transform.k,
@@ -119,9 +108,11 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
       type: 'render',
       data: { element: view.element, type: 'node', payload: node }
     })
+
+    return view
   }
 
-  private removeNodeView(id: NodeId) {
+  public removeNodeView(id: NodeId) {
     const view = this.nodeViews.get(id)
 
     if (view) {
@@ -131,7 +122,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     }
   }
 
-  private addConnectionView(connection: Schemes['Connection']) {
+  public addConnectionView(connection: Schemes['Connection']) {
     const view = new ConnectionView({
       contextmenu: event => this.emit({ type: 'contextmenu', data: { event, context: connection } })
     })
@@ -143,9 +134,11 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
       type: 'render',
       data: { element: view.element, type: 'connection', payload: connection }
     })
+
+    return view
   }
 
-  private removeConnectionView(id: ConnectionId) {
+  public removeConnectionView(id: ConnectionId) {
     const view = this.connectionViews.get(id)
 
     if (view) {

@@ -1,6 +1,6 @@
 import { BaseSchemes, GetSchemes, NodeEditor } from 'rete'
 
-import { AreaPlugin } from '..'
+import { BaseArea, BaseAreaPlugin } from '../base'
 
 type Schemes = GetSchemes<BaseSchemes['Node'] & { selected?: boolean }, any>
 
@@ -70,13 +70,14 @@ export function selector<E extends { label: string, id: string, unselect(): void
 }
 
 export type Accumulating = {
-    active(): boolean
+  active(): boolean
 }
 
 export type Selectable = ReturnType<typeof selector>
 
-export function selectableNodes<T>(area: AreaPlugin<Schemes, T>, core: Selectable, options: { accumulating: Accumulating }) {
+export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selectable, options: { accumulating: Accumulating }) {
   let editor: null | NodeEditor<Schemes> = null
+  const area = base as BaseAreaPlugin<Schemes, BaseArea<Schemes>>
   const getEditor = () => editor || (editor = area.parentScope<NodeEditor<Schemes>>(NodeEditor))
 
   let unselect = false

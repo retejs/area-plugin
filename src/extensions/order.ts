@@ -1,22 +1,24 @@
 import { BaseSchemes } from 'rete'
 
-import { AreaPlugin } from '..'
+import { BaseArea, BaseAreaPlugin } from '../base'
 
-export function simpleNodesOrder<T>(plugin: AreaPlugin<BaseSchemes, T>) {
-  plugin.addPipe(context => {
+export function simpleNodesOrder<Schemes extends BaseSchemes, T>(base: BaseAreaPlugin<Schemes, T>) {
+  const area = base as BaseAreaPlugin<Schemes, BaseArea<Schemes>>
+
+  area.addPipe(context => {
     if (!context || typeof context !== 'object' || !('type' in context)) return context
 
     if (context.type === 'nodepicked') {
-      const view = plugin.nodeViews.get(context.data.id)
-      const { content } = plugin.area
+      const view = area.nodeViews.get(context.data.id)
+      const { content } = area.area
 
       if (view) {
         content.reorder(view.element, null)
       }
     }
     if (context.type === 'connectioncreated') {
-      const view = plugin.connectionViews.get(context.data.id)
-      const { content } = plugin.area
+      const view = area.connectionViews.get(context.data.id)
+      const { content } = area.area
 
       if (view) {
         content.reorder(view.element, content.holder.firstChild)
