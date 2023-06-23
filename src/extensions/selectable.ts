@@ -80,7 +80,7 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
   const area = base as BaseAreaPlugin<Schemes, BaseArea<Schemes>>
   const getEditor = () => editor || (editor = area.parentScope<NodeEditor<Schemes>>(NodeEditor))
 
-  let unselect = false
+  let twitch: null | number = 0
 
   function selectNode(node: Schemes['Node']) {
     if (!node.selected) {
@@ -130,7 +130,7 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
       const accumulate = options.accumulating.active()
 
       core.pick({ id: pickedId, label: 'node' })
-
+      twitch = null
       add(pickedId, accumulate)
     } else if (context.type === 'nodetranslated') {
       const { id, position, previous } = context.data
@@ -139,14 +139,14 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
 
       if (core.isPicked({ id, label: 'node' })) core.translate(dx, dy)
     } else if (context.type === 'pointerdown') {
-      unselect = true
+      twitch = 0
     } else if (context.type === 'pointermove') {
-      unselect = false
+      if (twitch !== null) twitch++
     } else if (context.type === 'pointerup') {
-      if (unselect) {
+      if (twitch !== null && twitch < 4) {
         core.unselectAll()
       }
-      unselect = false
+      twitch = null
     }
     return context
   })
