@@ -1,4 +1,4 @@
-import { BaseSchemes, GetSchemes, NodeEditor } from 'rete'
+import { BaseSchemes, GetSchemes, NodeEditor, NodeId } from 'rete'
 
 import { BaseArea, BaseAreaPlugin } from '../base'
 
@@ -95,6 +95,31 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
       area.update('node', node.id)
     }
   }
+  function add(nodeId: NodeId, accumulate: boolean) {
+    const node = getEditor().getNode(nodeId)
+
+    if (!node) return
+
+    core.add({
+      label: 'node',
+      id: node.id,
+      translate(dx, dy) {
+        const view = area.nodeViews.get(node.id)
+        const current = view?.position
+
+        if (current) {
+          view.translate(current.x + dx, current.y + dy)
+        }
+      },
+      unselect() {
+        unselectNode(node)
+      }
+    }, accumulate)
+    selectNode(node)
+  }
+  function remove(nodeId: NodeId) {
+    core.remove({ id: nodeId, label: 'node' })
+  }
 
   // eslint-disable-next-line max-statements, complexity
   area.addPipe(context => {
@@ -102,30 +127,11 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
 
     if (context.type === 'nodepicked') {
       const pickedId = context.data.id
-
       const accumulate = options.accumulating.active()
-      const node = getEditor().getNode(pickedId)
-
-      if (!node) return
 
       core.pick({ id: pickedId, label: 'node' })
 
-      core.add({
-        label: 'node',
-        id: node.id,
-        translate(dx, dy) {
-          const view = area.nodeViews.get(node.id)
-          const current = view?.position
-
-          if (current) {
-            view.translate(current.x + dx, current.y + dy)
-          }
-        },
-        unselect() {
-          unselectNode(node)
-        }
-      }, accumulate)
-      selectNode(node)
+      add(pickedId, accumulate)
     } else if (context.type === 'nodetranslated') {
       const { id, position, previous } = context.data
       const dx = position.x - previous.x
@@ -144,5 +150,10 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
     }
     return context
   })
+
+  return {
+    select: add,
+    unselect: remove
+  }
 }
 
