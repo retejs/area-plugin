@@ -28,45 +28,54 @@ export function accumulateOnCtrl() {
   }
 }
 
-export function selector<E extends { label: string, id: string, unselect(): void, translate(dx: number, dy: number): void }>() {
-  const entities = new Map<string, E>()
-  let pickId: string | null = null
+export type SelectorEntity = { label: string, id: string, unselect(): void, translate(dx: number, dy: number): void }
 
-  function unselectAll() {
-    entities.forEach(item => item.unselect())
-    entities.clear()
+export class Selector<E extends SelectorEntity> {
+  entities = new Map<string, E>()
+  pickId: string | null = null
+
+  isSelected(entity: Pick<E, 'label' | 'id'>) {
+    return this.entities.has(`${entity.label}_${entity.id}`)
   }
-  return {
-    isSelected(entity: Pick<E, 'label' | 'id'>) {
-      return entities.has(`${entity.label}_${entity.id}`)
-    },
-    add(entity: E, accumulate: boolean) {
-      if (!accumulate) unselectAll()
-      entities.set(`${entity.label}_${entity.id}`, entity)
-    },
-    remove(entity: Pick<E, 'label' | 'id'>) {
-      const id = `${entity.label}_${entity.id}`
-      const item = entities.get(id)
 
-      if (item) {
-        entities.delete(id)
-        item.unselect()
-      }
-    },
-    unselectAll,
-    translate(dx: number, dy: number) {
-      entities.forEach(item => !this.isPicked(item) && item.translate(dx, dy))
-    },
-    pick(entity: Pick<E, 'label' | 'id'>) {
-      pickId = `${entity.label}_${entity.id}`
-    },
-    release() {
-      pickId = null
-    },
-    isPicked(entity: Pick<E, 'label' | 'id'>) {
-      return pickId === `${entity.label}_${entity.id}`
+  add(entity: E, accumulate: boolean) {
+    if (!accumulate) this.unselectAll()
+    this.entities.set(`${entity.label}_${entity.id}`, entity)
+  }
+
+  remove(entity: Pick<E, 'label' | 'id'>) {
+    const id = `${entity.label}_${entity.id}`
+    const item = this.entities.get(id)
+
+    if (item) {
+      this.entities.delete(id)
+      item.unselect()
     }
   }
+
+  unselectAll() {
+    [...Array.from(this.entities.values())].forEach(item => this.remove(item))
+  }
+
+  translate(dx: number, dy: number) {
+    this.entities.forEach(item => !this.isPicked(item) && item.translate(dx, dy))
+  }
+
+  pick(entity: Pick<E, 'label' | 'id'>) {
+    this.pickId = `${entity.label}_${entity.id}`
+  }
+
+  release() {
+    this.pickId = null
+  }
+
+  isPicked(entity: Pick<E, 'label' | 'id'>) {
+    return this.pickId === `${entity.label}_${entity.id}`
+  }
+}
+
+export function selector<E extends SelectorEntity>() {
+  return new Selector<E>()
 }
 
 export type Accumulating = {

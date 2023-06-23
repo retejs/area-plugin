@@ -1,7 +1,7 @@
 export { getBoundingBox } from './bounding-box'
 export { simpleNodesOrder } from './order'
 export { restrictor } from './restrictor'
-export { accumulateOnCtrl, selectableNodes, selector } from './selectable'
+export { accumulateOnCtrl, selectableNodes, Selector, selector } from './selectable'
 export { showInputControl } from './show-input-control'
 export { snapGrid } from './snap'
 export { zoomAt } from './zoom-at'
