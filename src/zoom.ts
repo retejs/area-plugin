@@ -1,6 +1,14 @@
+
+/**
+ * Zoom source
+ */
 export type ZoomSource = 'wheel' | 'touch' | 'dblclick'
 export type OnZoom = (delta: number, ox: number, oy: number, source?: ZoomSource) => void
 
+/**
+ * Zoom class, used to handle zooming of the area. Can be extended to add custom behavior.
+ * @internal
+ */
 export class Zoom {
   previous: { cx: number, cy: number, distance: number } | null = null
   pointers: PointerEvent[] = []
@@ -8,7 +16,7 @@ export class Zoom {
   private element!: HTMLElement
   private onzoom!: OnZoom
 
-  constructor(private intensity: number) {}
+  constructor(private intensity: number) { }
 
   public initialize(container: HTMLElement, element: HTMLElement, onzoom: OnZoom) {
     this.container = container
@@ -43,8 +51,8 @@ export class Zoom {
     const distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2))
 
     return {
-      cx: (x1 + x2)/2,
-      cy: (y1 + y2)/2,
+      cx: (x1 + x2) / 2,
+      cy: (y1 + y2) / 2,
       distance
     }
   }

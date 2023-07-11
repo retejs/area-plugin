@@ -2,6 +2,12 @@ import { BaseSchemes } from 'rete'
 
 import { BaseArea, BaseAreaPlugin } from '../base'
 
+/**
+ * Simple nodes order extension
+ * @param base The base area plugin
+ * @listens nodepicked
+ * @listens connectioncreated
+ */
 export function simpleNodesOrder<Schemes extends BaseSchemes, T>(base: BaseAreaPlugin<Schemes, T>) {
   const area = base as BaseAreaPlugin<Schemes, BaseArea<Schemes>>
 

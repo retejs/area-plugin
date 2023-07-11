@@ -51,6 +51,11 @@ export class Area {
     this.content.holder.style.transform = `translate(${x}px, ${y}px) scale(${k})`
   }
 
+  /**
+   * Drag handler. Destroy previous drag handler if exists.
+   * @param drag drag handler
+   * @example area.area.setDragHandler(null) // disable drag
+   */
   public setDragHandler(drag: Drag | null) {
     if (this.dragHandler) this.dragHandler.destroy()
     this.dragHandler = drag
@@ -58,7 +63,7 @@ export class Area {
       this.container,
       {
         getCurrentPosition: () => this.transform,
-        getZoom:  () => 1
+        getZoom: () => 1
       },
       {
         start: () => null,
@@ -68,6 +73,11 @@ export class Area {
     )
   }
 
+  /**
+   * Set zoom handler. Destroy previous zoom handler if exists.
+   * @param zoom zoom handler
+   * @example area.area.setZoomHandler(null) // disable zoom
+   */
   public setZoomHandler(zoom: Zoom | null) {
     if (this.zoomHandler) this.zoomHandler.destroy()
     this.zoomHandler = zoom
@@ -111,6 +121,14 @@ export class Area {
     this.update()
   }
 
+  /**
+   * Change position of the area
+   * @param x desired x coordinate
+   * @param y desired y coordinate
+   * @returns true if the translation was successful, false otherwise
+   * @emits translate
+   * @emits translated
+   */
   public async translate(x: number, y: number) {
     type T = undefined | { data: TranslateEventParams }
     const position = { x, y }
@@ -127,6 +145,16 @@ export class Area {
     return true
   }
 
+  /**
+   * Change zoom level of the area
+   * @param zoom new zoom level
+   * @param ox x coordinate of the origin of the zoom
+   * @param oy y coordinate of the origin of the zoom
+   * @param source source of the zoom
+   * @returns true if the zoom was successful, false otherwise
+   * @emits zoom
+   * @emits zoomed
+   */
   public async zoom(zoom: number, ox = 0, oy = 0, source?: ZoomSource) {
     type T = undefined | { data: ZoomEventParams }
     const k = this.transform.k

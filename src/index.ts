@@ -18,6 +18,10 @@ export type { PointerListener } from './utils'
 export { usePointerListener } from './utils'
 export { Zoom } from './zoom'
 
+/**
+ * A union of all possible signals that can be emitted by the area
+ * @priority 9
+ */
 export type Area2D<Schemes extends BaseSchemes> =
   | BaseArea<Schemes>
   | { type: 'translate', data: TranslateEventParams }
@@ -28,6 +32,17 @@ export type Area2D<Schemes extends BaseSchemes> =
 
 export type Area2DInherited<Schemes extends BaseSchemes, ExtraSignals = never> = [Area2D<Schemes> | ExtraSignals, Root<Schemes>]
 
+/**
+ * A plugin that provides a 2D area for nodes and connections
+ * @priority 8
+ * @emits render
+ * @emits rendered
+ * @emits unmount
+ * @listens nodecreated
+ * @listens noderemoved
+ * @listens connectioncreated
+ * @listens connectionremoved
+ */
 export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> extends BaseAreaPlugin<Schemes, Area2D<Schemes> | ExtraSignals> {
   public nodeViews = new Map<NodeId, NodeView>()
   public connectionViews = new Map<ConnectionId, ConnectionView>()
@@ -148,24 +163,44 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     }
   }
 
+  /**
+   * Force update rendered element by id (node, connection, etc.)
+   * @param type Element type
+   * @param id Element id
+   * @emits render
+   */
   public async update(type: GetRenderTypes<Area2D<Schemes>> | GetRenderTypes<ExtraSignals>, id: string) {
     const data = this.elements.get(type, id)
 
     if (data) await this.emit({ type: 'render', data } as Area2D<Schemes>)
   }
 
+  /**
+   * Resize node
+   * @param id Node id
+   * @param width Desired width
+   * @param height Desired height
+   */
   public async resize(id: NodeId, width: number, height: number) {
     const view = this.nodeViews.get(id)
 
     if (view) return await view.resize(width, height)
   }
 
+  /**
+   * Translate node to position
+   * @param id Node id
+   * @param position Position
+   */
   public async translate(id: NodeId, { x, y }: Position) {
     const view = this.nodeViews.get(id)
 
     if (view) return await view.translate(x, y)
   }
 
+  /**
+   * Destroy all views and remove all event listeners
+   */
   public destroy() {
     this.container.removeEventListener('contextmenu', this.onContextMenu)
     Array.from(this.connectionViews.keys()).forEach(id => this.removeConnectionView(id))

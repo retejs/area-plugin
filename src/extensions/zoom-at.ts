@@ -5,8 +5,20 @@ import { getBoundingBox } from '../utils'
 import { NodeRef, SchemesWithSizes } from './shared/types'
 import { getNodesRect } from './shared/utils'
 
-type Params = { scale?: number }
+/**
+ * Zoom extension parameters
+ */
+export type Params = {
+  /** Set gap between nodes and the viewport border */
+  scale?: number
+}
 
+/**
+ * Zooms the area to fit the given nodes
+ * @param plugin The area plugin
+ * @param nodes The nodes to fit
+ * @param params The zoom parameters
+ */
 // eslint-disable-next-line max-statements, max-len
 export async function zoomAt<Schemes extends SchemesWithSizes, K>(plugin: AreaPlugin<Schemes, K>, nodes: NodeRef<Schemes>[], params?: Params) {
   const { scale = 0.9 } = params || {}

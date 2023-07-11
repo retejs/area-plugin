@@ -17,6 +17,9 @@ type DragConfig = {
   getZoom: () => number
 }
 
+/**
+ * Drag handler, used to handle dragging of the area and nodes. Can be extended to add custom behavior.
+ */
 export class Drag {
   private pointerStart?: Position
   private startPosition?: Position

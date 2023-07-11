@@ -4,6 +4,9 @@ import { BaseArea, BaseAreaPlugin } from '../base'
 
 type Schemes = GetSchemes<BaseSchemes['Node'] & { selected?: boolean }, any>
 
+/**
+ * Selector's accumulate function, activated when the ctrl key is pressed
+ */
 export function accumulateOnCtrl() {
   let pressed = false
 
@@ -30,6 +33,10 @@ export function accumulateOnCtrl() {
 
 export type SelectorEntity = { label: string, id: string, unselect(): void, translate(dx: number, dy: number): void }
 
+/**
+ * Selector class. Used to collect selected entities (nodes, connections, etc.) and synchronize them (select, unselect, translate, etc.).
+ * Can be extended to add custom functionality.
+ */
 export class Selector<E extends SelectorEntity> {
   entities = new Map<string, E>()
   pickId: string | null = null
@@ -74,16 +81,34 @@ export class Selector<E extends SelectorEntity> {
   }
 }
 
+/**
+ * Selector factory, uses default Selector class
+ * @returns Selector instance
+ */
 export function selector<E extends SelectorEntity>() {
   return new Selector<E>()
 }
 
+/**
+ * Accumulating interface, used to determine whether to accumulate entities on selection
+ */
 export type Accumulating = {
   active(): boolean
 }
 
 export type Selectable = ReturnType<typeof selector>
 
+/**
+ * Selectable nodes extension. Adds the ability to select nodes in the area.
+ * @param base BaseAreaPlugin instance
+ * @param core Selectable instance
+ * @param options.accumulating Accumulating interface
+ * @listens nodepicked
+ * @listens nodetranslated
+ * @listens pointerdown
+ * @listens pointermove
+ * @listens pointerup
+ */
 export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selectable, options: { accumulating: Accumulating }) {
   let editor: null | NodeEditor<Schemes> = null
   const area = base as BaseAreaPlugin<Schemes, BaseArea<Schemes>>
@@ -104,6 +129,11 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
       area.update('node', node.id)
     }
   }
+  /**
+   * Select node programmatically
+   * @param nodeId Node id
+   * @param accumulate Whether to accumulate nodes on selection
+   */
   function add(nodeId: NodeId, accumulate: boolean) {
     const node = getEditor().getNode(nodeId)
 
@@ -126,6 +156,10 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
     }, accumulate)
     selectNode(node)
   }
+  /**
+   * Unselect node programmatically
+   * @param nodeId Node id
+   */
   function remove(nodeId: NodeId) {
     core.remove({ id: nodeId, label: 'node' })
   }

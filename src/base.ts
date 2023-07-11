@@ -27,6 +27,10 @@ interface Area {
   content: Content
 }
 
+/**
+ * A union of all possible signals that can be emitted by any area plugin
+ * @priority 10
+ */
 export type BaseArea<Schemes extends BaseSchemes> =
   | { type: 'nodepicked', data: { id: string } }
   | { type: 'nodedragged', data: Schemes['Node'] }
@@ -43,6 +47,10 @@ export type BaseArea<Schemes extends BaseSchemes> =
   | { type: 'unmount', data: { element: HTMLElement } }
   | { type: 'reordered', data: { element: HTMLElement } }
 
+/**
+ * Base abstract class for area plugins that provides a common interface
+ * @abstract
+ */
 export abstract class BaseAreaPlugin<Schemes extends BaseSchemes, Signals> extends Scope<Signals, [Root<Schemes>]> {
   public abstract nodeViews: Map<NodeId, NodeView>
   public abstract connectionViews: Map<ConnectionId, ConnectionView>

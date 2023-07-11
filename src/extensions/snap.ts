@@ -2,7 +2,24 @@ import { BaseSchemes } from 'rete'
 
 import { BaseArea, BaseAreaPlugin } from '../base'
 
-export function snapGrid<Schemes extends BaseSchemes, K>(base: BaseAreaPlugin<Schemes, K>, params?: { size?: number, dynamic?: boolean }) {
+/**
+ * Snap grid extension parameters
+ */
+export type Params = {
+  /** The grid size */
+  size?: number
+  /** Whether to snap on node drag */
+  dynamic?: boolean
+}
+
+/**
+ * Snap grid extension
+ * @param base The base area plugin
+ * @param params The snap parameters
+ * @listens nodetranslate
+ * @listens nodedragged
+ */
+export function snapGrid<Schemes extends BaseSchemes, K>(base: BaseAreaPlugin<Schemes, K>, params?: Params) {
   const area = base as BaseAreaPlugin<Schemes, BaseArea<Schemes>>
   const size = typeof params?.size === 'undefined' ? 16 : params.size
   const dynamic = typeof params?.dynamic === 'undefined' ? true : params.dynamic
