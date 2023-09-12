@@ -10,13 +10,13 @@ export type OnZoom = (delta: number, ox: number, oy: number, source?: ZoomSource
  * @internal
  */
 export class Zoom {
-  previous: { cx: number, cy: number, distance: number } | null = null
-  pointers: PointerEvent[] = []
-  private container!: HTMLElement
-  private element!: HTMLElement
-  private onzoom!: OnZoom
+  protected previous: { cx: number, cy: number, distance: number } | null = null
+  protected pointers: PointerEvent[] = []
+  protected container!: HTMLElement
+  protected element!: HTMLElement
+  protected onzoom!: OnZoom
 
-  constructor(private intensity: number) { }
+  constructor(protected intensity: number) { }
 
   public initialize(container: HTMLElement, element: HTMLElement, onzoom: OnZoom) {
     this.container = container
@@ -31,7 +31,7 @@ export class Zoom {
     window.addEventListener('pointercancel', this.up)
   }
 
-  private wheel = (e: WheelEvent) => {
+  protected wheel = (e: WheelEvent) => {
     e.preventDefault()
 
     const { left, top } = this.element.getBoundingClientRect()
@@ -57,11 +57,11 @@ export class Zoom {
     }
   }
 
-  private down = (e: PointerEvent) => {
+  protected down = (e: PointerEvent) => {
     this.pointers.push(e)
   }
 
-  private move = (e: PointerEvent) => {
+  protected move = (e: PointerEvent) => {
     this.pointers = this.pointers.map(p => p.pointerId === e.pointerId ? e : p)
     if (!this.isTranslating()) return
 
@@ -79,12 +79,12 @@ export class Zoom {
     this.previous = { cx, cy, distance }
   }
 
-  private up = (e: PointerEvent) => {
+  protected up = (e: PointerEvent) => {
     this.previous = null
     this.pointers = this.pointers.filter(p => p.pointerId !== e.pointerId)
   }
 
-  private dblclick = (e: MouseEvent) => {
+  protected dblclick = (e: MouseEvent) => {
     e.preventDefault()
 
     const { left, top } = this.element.getBoundingClientRect()
