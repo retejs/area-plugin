@@ -16,7 +16,7 @@ export class Zoom {
   protected element!: HTMLElement
   protected onzoom!: OnZoom
 
-  constructor(private intensity: number) { }
+  constructor(protected intensity: number) { }
 
   public initialize(container: HTMLElement, element: HTMLElement, onzoom: OnZoom) {
     this.container = container
