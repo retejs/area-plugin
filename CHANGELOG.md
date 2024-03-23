@@ -1,3 +1,10 @@
+## [2.0.3](https://github.com/retejs/area-plugin/compare/v2.0.2...v2.0.3) (2024-03-23)
+
+
+### Bug Fixes
+
+* resize of correct element ([dd8cf41](https://github.com/retejs/area-plugin/commit/dd8cf411b2194bd6b0f311caab11480f45801116))
+
 ## [2.0.2](https://github.com/retejs/area-plugin/compare/v2.0.1...v2.0.2) (2024-01-27)
 
 
