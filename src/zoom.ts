@@ -28,6 +28,7 @@ export class Zoom {
 
     window.addEventListener('pointermove', this.move)
     window.addEventListener('pointerup', this.up)
+    window.addEventListener('contextmenu', this.contextmenu)
     window.addEventListener('pointercancel', this.up)
   }
 
@@ -77,6 +78,10 @@ export class Zoom {
       this.onzoom(delta, ox - (this.previous.cx - cx), oy - (this.previous.cy - cy), 'touch')
     }
     this.previous = { cx, cy, distance }
+  }
+
+  protected contextmenu = () => {
+    this.pointers = []
   }
 
   protected up = (e: PointerEvent) => {
