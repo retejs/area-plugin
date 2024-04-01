@@ -69,7 +69,7 @@ export class Zoom {
     const { left, top } = this.element.getBoundingClientRect()
     const { cx, cy, distance } = this.getTouches()
 
-    if (this.previous !== null) {
+    if (this.previous !== null && this.previous.distance > 0) {
       const delta = distance / this.previous.distance - 1
 
       const ox = (left - cx) * delta
