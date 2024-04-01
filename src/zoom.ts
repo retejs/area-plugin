@@ -28,6 +28,7 @@ export class Zoom {
 
     window.addEventListener('pointermove', this.move)
     window.addEventListener('pointerup', this.up)
+    window.addEventListener('contextmenu', this.contextmenu)
     window.addEventListener('pointercancel', this.up)
   }
 
@@ -68,7 +69,7 @@ export class Zoom {
     const { left, top } = this.element.getBoundingClientRect()
     const { cx, cy, distance } = this.getTouches()
 
-    if (this.previous !== null) {
+    if (this.previous !== null && this.previous.distance > 0) {
       const delta = distance / this.previous.distance - 1
 
       const ox = (left - cx) * delta
@@ -77,6 +78,10 @@ export class Zoom {
       this.onzoom(delta, ox - (this.previous.cx - cx), oy - (this.previous.cy - cy), 'touch')
     }
     this.previous = { cx, cy, distance }
+  }
+
+  protected contextmenu = () => {
+    this.pointers = []
   }
 
   protected up = (e: PointerEvent) => {
