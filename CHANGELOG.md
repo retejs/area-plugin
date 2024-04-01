@@ -1,3 +1,11 @@
+## [2.0.4](https://github.com/retejs/area-plugin/compare/v2.0.3...v2.0.4) (2024-04-01)
+
+
+### Bug Fixes
+
+* **zoom:** translation in mac os ([849f20e](https://github.com/retejs/area-plugin/commit/849f20e5905aee8a156fc26299f98360b5c496ed))
+* **zoom:** translation with equal pointers position ([900d054](https://github.com/retejs/area-plugin/commit/900d05419fa3a6a0223b67af707ad7af30c3c1ed))
+
 ## [2.0.3](https://github.com/retejs/area-plugin/compare/v2.0.2...v2.0.3) (2024-03-23)
 
 
