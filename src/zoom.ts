@@ -28,8 +28,8 @@ export class Zoom {
 
     window.addEventListener('pointermove', this.move)
     window.addEventListener('pointerup', this.up)
-    window.addEventListener('contextmenu', this.contextmenu)
     window.addEventListener('pointercancel', this.up)
+    window.addEventListener('contextmenu', this.contextmenu)
   }
 
   protected wheel = (e: WheelEvent) => {
@@ -113,5 +113,6 @@ export class Zoom {
     window.removeEventListener('pointermove', this.move)
     window.removeEventListener('pointerup', this.up)
     window.removeEventListener('pointercancel', this.up)
+    window.removeEventListener('contextmenu', this.contextmenu)
   }
 }
