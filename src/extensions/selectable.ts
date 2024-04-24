@@ -186,7 +186,7 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
     } else if (context.type === 'pointermove') {
       if (twitch !== null) twitch++
     } else if (context.type === 'pointerup') {
-      if (twitch !== null && twitch < 4) {
+      if (twitch !== null && twitch < 4 && context.data.event.button !== 2) {
         core.unselectAll()
       }
       twitch = null
