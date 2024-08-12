@@ -11,10 +11,10 @@ export function accumulateOnCtrl() {
   let pressed = false
 
   function keydown(e: KeyboardEvent) {
-    if (e.key === 'Control') pressed = true
+    if (e.key === 'Control' || e.key === 'Meta') pressed = true
   }
   function keyup(e: KeyboardEvent) {
-    if (e.key === 'Control') pressed = false
+    if (e.key === 'Control' || e.key === 'Meta') pressed = false
   }
 
   document.addEventListener('keydown', keydown)
