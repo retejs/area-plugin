@@ -1,3 +1,10 @@
+## [2.0.5](https://github.com/retejs/area-plugin/compare/v2.0.4...v2.0.5) (2024-08-20)
+
+
+### Bug Fixes
+
+* skip elements with 'fragment' attribute when resize ([dae3239](https://github.com/retejs/area-plugin/commit/dae323934417c2aed05f71fd4ba123e529787421))
+
 ## [2.0.4](https://github.com/retejs/area-plugin/compare/v2.0.3...v2.0.4) (2024-04-01)
 
 
