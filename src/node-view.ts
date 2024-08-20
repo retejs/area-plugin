@@ -64,7 +64,7 @@ export class NodeView {
 
     if (!(await this.guards.resize({ size }))) return false
 
-    const el = this.element.querySelector('*:not(span)')
+    const el = this.element.querySelector('*:not(span):not([fragment])')
 
     if (!el || !(el instanceof HTMLElement)) return false
 
