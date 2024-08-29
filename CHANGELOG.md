@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/retejs/area-plugin/compare/v2.0.5...v2.1.0) (2024-08-29)
+
+
+### Features
+
+* add Meta key support for accumulation function ([45e6aa5](https://github.com/retejs/area-plugin/commit/45e6aa54c94c895ec8a2aa162c32eae4375cfe7e))
+
 ## [2.0.5](https://github.com/retejs/area-plugin/compare/v2.0.4...v2.0.5) (2024-08-20)
 
 
