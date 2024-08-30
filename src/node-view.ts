@@ -6,14 +6,14 @@ export type NodeResizeEventParams = { size: Size }
 
 type Events = {
   picked: () => void
-  translated: (params: NodeTranslateEventParams) => Promise<unknown | boolean>
+  translated: (params: NodeTranslateEventParams) => Promise<unknown>
   dragged: () => void
   contextmenu: (event: MouseEvent) => void
-  resized: (params: NodeResizeEventParams) => Promise<unknown | boolean>
+  resized: (params: NodeResizeEventParams) => Promise<unknown>
 }
 type Guards = {
-  resize: (params: NodeResizeEventParams) => Promise<unknown | boolean>
-  translate: (params: NodeTranslateEventParams) => Promise<unknown | boolean>
+  resize: (params: NodeResizeEventParams) => Promise<unknown>
+  translate: (params: NodeTranslateEventParams) => Promise<unknown>
 }
 
 export class NodeView {
@@ -25,7 +25,7 @@ export class NodeView {
     this.element = document.createElement('div')
     this.element.style.position = 'absolute'
     this.position = { x: 0, y: 0 }
-    this.translate(0, 0)
+    void this.translate(0, 0)
 
     this.element.addEventListener('contextmenu', event => this.events.contextmenu(event))
 
@@ -43,7 +43,6 @@ export class NodeView {
       }
     )
   }
-
   public translate = async (x: number, y: number) => {
     type Params = undefined | { data: NodeTranslateEventParams }
     const previous = { ...this.position }
@@ -58,11 +57,10 @@ export class NodeView {
 
     return true
   }
-
   public resize = async (width: number, height: number) => {
     const size = { width, height }
 
-    if (!(await this.guards.resize({ size }))) return false
+    if (!await this.guards.resize({ size })) return false
 
     const el = this.element.querySelector('*:not(span):not([fragment])')
 

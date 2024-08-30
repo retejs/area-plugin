@@ -2,9 +2,9 @@ import { Position, Size } from './types'
 
 type PointerHandler = (event: PointerEvent) => void
 type PointerListenerHandlers = {
-    down: PointerHandler
-    move: PointerHandler
-    up: PointerHandler
+  down: PointerHandler
+  move: PointerHandler
+  up: PointerHandler
 }
 
 export type PointerListener = { destroy: () => void }
@@ -14,16 +14,16 @@ export type PointerListener = { destroy: () => void }
  * where last two not active before pointerdown triggered for performance reasons
  */
 export function usePointerListener(element: HTMLElement, handlers: PointerListenerHandlers): PointerListener {
-  const move: PointerHandler = (event) => {
+  const move: PointerHandler = event => {
     handlers.move(event)
   }
-  const up: PointerHandler = (event) => {
+  const up: PointerHandler = event => {
     window.removeEventListener('pointermove', move)
     window.removeEventListener('pointerup', up)
     window.removeEventListener('pointercancel', up)
     handlers.up(event)
   }
-  const down: PointerHandler = (event) => {
+  const down: PointerHandler = event => {
     window.addEventListener('pointermove', move)
     window.addEventListener('pointerup', up)
     window.addEventListener('pointercancel', up)
@@ -45,8 +45,12 @@ export function usePointerListener(element: HTMLElement, handlers: PointerListen
 /**
  * Bounding box
  */
-const min = (arr: number[]) => arr.length === 0 ? 0 : Math.min(...arr)
-const max = (arr: number[]) => arr.length === 0 ? 0 : Math.max(...arr)
+const min = (arr: number[]) => arr.length === 0
+  ? 0
+  : Math.min(...arr)
+const max = (arr: number[]) => arr.length === 0
+  ? 0
+  : Math.max(...arr)
 
 export function getBoundingBox(rects: ({ position: Position } & Size)[]) {
   const left = min(rects.map(rect => rect.position.x))

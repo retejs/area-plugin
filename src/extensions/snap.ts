@@ -21,8 +21,12 @@ export type Params = {
  */
 export function snapGrid<Schemes extends BaseSchemes, K>(base: BaseAreaPlugin<Schemes, K>, params?: Params) {
   const area = base as BaseAreaPlugin<Schemes, BaseArea<Schemes>>
-  const size = typeof params?.size === 'undefined' ? 16 : params.size
-  const dynamic = typeof params?.dynamic === 'undefined' ? true : params.dynamic
+  const size = typeof params?.size === 'undefined'
+    ? 16
+    : params.size
+  const dynamic = typeof params?.dynamic === 'undefined'
+    ? true
+    : params.dynamic
 
   function snap(value: number) {
     return Math.round(value / size) * size
@@ -49,7 +53,7 @@ export function snapGrid<Schemes extends BaseSchemes, K>(base: BaseAreaPlugin<Sc
       if (view) {
         const { x, y } = view.position
 
-        view.translate(snap(x), snap(y))
+        void view.translate(snap(x), snap(y))
       }
     }
     return context

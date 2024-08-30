@@ -26,8 +26,9 @@
     "rete": "^2.0.0"
   },
   "devDependencies": {
+    "globals": "^15.9.0",
     "rete": "^2.0.0",
-    "rete-cli": "^1.0.2",
+    "rete-cli": "~2.0.1",
     "rollup-plugin-sass": "^0.9.2"
   },
   "dependencies": {

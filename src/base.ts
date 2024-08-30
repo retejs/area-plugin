@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-invalid-void-type */
 import { BaseSchemes, ConnectionId, NodeId, Root, Scope } from 'rete'
 
 import { NodeResizeEventParams, NodeTranslateEventParams } from './node-view'

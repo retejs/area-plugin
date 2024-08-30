@@ -119,14 +119,14 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
   function selectNode(node: Schemes['Node']) {
     if (!node.selected) {
       node.selected = true
-      area.update('node', node.id)
+      void area.update('node', node.id)
     }
   }
 
   function unselectNode(node: Schemes['Node']) {
     if (node.selected) {
       node.selected = false
-      area.update('node', node.id)
+      void area.update('node', node.id)
     }
   }
   /**
@@ -147,7 +147,7 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
         const current = view?.position
 
         if (current) {
-          view.translate(current.x + dx, current.y + dy)
+          void view.translate(current.x + dx, current.y + dy)
         }
       },
       unselect() {
