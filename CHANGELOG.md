@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/retejs/area-plugin/compare/v2.1.0...v2.1.1) (2024-08-30)
+
+
+### Bug Fixes
+
+* update cli and fix linting errors ([17bb46b](https://github.com/retejs/area-plugin/commit/17bb46bc24c55a895b80281d1c1740c1bcedbe16))
+
 # [2.1.0](https://github.com/retejs/area-plugin/compare/v2.0.5...v2.1.0) (2024-08-29)
 
 
