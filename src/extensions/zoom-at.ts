@@ -23,7 +23,9 @@ export type Params = {
 export async function zoomAt<Schemes extends SchemesWithSizes, K>(plugin: AreaPlugin<Schemes, K>, nodes: NodeRef<Schemes>[], params?: Params) {
   const { scale = 0.9 } = params || {}
   const editor = plugin.parentScope<NodeEditor<Schemes>>(NodeEditor)
-  const list = nodes.map(node => typeof node === 'object' ? node : editor.getNode(node))
+  const list = nodes.map(node => typeof node === 'object'
+    ? node
+    : editor.getNode(node))
   const rects = getNodesRect(list, plugin.nodeViews)
   const boundingBox = getBoundingBox(rects)
   const [w, h] = [plugin.container.clientWidth, plugin.container.clientHeight]

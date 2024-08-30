@@ -37,7 +37,9 @@ export class Zoom {
 
     const { left, top } = this.element.getBoundingClientRect()
     const isNegative = e.deltaY < 0
-    const delta = isNegative ? this.intensity : - this.intensity
+    const delta = isNegative
+      ? this.intensity
+      : -this.intensity
     const ox = (left - e.clientX) * delta
     const oy = (top - e.clientY) * delta
 
@@ -63,7 +65,9 @@ export class Zoom {
   }
 
   protected move = (e: PointerEvent) => {
-    this.pointers = this.pointers.map(p => p.pointerId === e.pointerId ? e : p)
+    this.pointers = this.pointers.map(p => p.pointerId === e.pointerId
+      ? e
+      : p)
     if (!this.isTranslating()) return
 
     const { left, top } = this.element.getBoundingClientRect()

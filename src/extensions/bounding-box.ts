@@ -13,7 +13,9 @@ import { getNodesRect } from './shared/utils'
  */
 export function getBoundingBox<Schemes extends BaseSchemes, K>(plugin: BaseAreaPlugin<Schemes, K>, nodes: NodeRef<Schemes>[]) {
   const editor = plugin.parentScope<NodeEditor<Schemes>>(NodeEditor)
-  const list = nodes.map(node => typeof node === 'object' ? node : editor.getNode(node))
+  const list = nodes.map(node => typeof node === 'object'
+    ? node
+    : editor.getNode(node))
   const rects = getNodesRect(list, plugin.nodeViews)
 
   return getBBox(rects)

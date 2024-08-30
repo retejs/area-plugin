@@ -31,10 +31,12 @@ export function showInputControl<S extends Scheme>(area: BaseAreaPlugin<BaseSche
       return connection.target === target && connection.targetInput === targetInput
     }))
 
-    input.showControl = visible ? visible({ hasAnyConnection, input }) : !hasAnyConnection
+    input.showControl = visible
+      ? visible({ hasAnyConnection, input })
+      : !hasAnyConnection
 
     if (input.showControl !== previous) {
-      area.update('node', node.id)
+      void area.update('node', node.id)
     }
   }
 

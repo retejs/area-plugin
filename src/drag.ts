@@ -3,7 +3,7 @@ import { PointerListener, usePointerListener } from './utils'
 
 type Events = {
   start: (e: PointerEvent) => void
-  translate: (x: number, y: number, e: PointerEvent) => void
+  translate: (x: number, y: number, e: PointerEvent) => unknown
   drag: (e: PointerEvent) => void
 }
 
@@ -69,7 +69,7 @@ export class Drag {
     const x = this.startPosition.x + delta.x / zoom
     const y = this.startPosition.y + delta.y / zoom
 
-    this.events.translate(x, y, e)
+    void this.events.translate(x, y, e)
   }
 
   private up = (e: PointerEvent) => {

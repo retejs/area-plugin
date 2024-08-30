@@ -17,8 +17,8 @@ type Events = {
   reordered: (element: HTMLElement) => Promise<unknown>
 }
 type Guards = {
-  translate: (params: TranslateEventParams) => Promise<unknown | boolean>
-  zoom: (params: ZoomEventParams) => Promise<unknown | boolean>
+  translate: (params: TranslateEventParams) => Promise<unknown>
+  zoom: (params: ZoomEventParams) => Promise<unknown>
 }
 
 export class Area {
@@ -111,12 +111,12 @@ export class Area {
   }
 
   private onTranslate = (x: number, y: number) => {
-    if (this.zoomHandler && this.zoomHandler.isTranslating()) return // lock translation while zoom on multitouch
-    this.translate(x, y)
+    if (this.zoomHandler?.isTranslating()) return // lock translation while zoom on multitouch
+    void this.translate(x, y)
   }
 
   private onZoom = (delta: number, ox: number, oy: number, source?: ZoomSource) => {
-    this.zoom(this.transform.k * (1 + delta), ox, oy, source)
+    void this.zoom(this.transform.k * (1 + delta), ox, oy, source)
 
     this.update()
   }
@@ -162,7 +162,7 @@ export class Area {
 
     if (!result) return true
 
-    const d = (k - result.data.zoom) / ((k - zoom) || 1)
+    const d = (k - result.data.zoom) / (k - zoom || 1)
 
     this.transform.k = result.data.zoom || 1
     this.transform.x += ox * d

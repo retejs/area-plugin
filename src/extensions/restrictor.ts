@@ -26,15 +26,21 @@ export type Params = {
  */
 export function restrictor<Schemes extends BaseSchemes, K>(plugin: AreaPlugin<Schemes, K>, params?: Params) {
   const scaling = params?.scaling
-    ? params.scaling === true ? { min: 0.1, max: 1 } : params.scaling
+    ? params.scaling === true
+      ? { min: 0.1, max: 1 }
+      : params.scaling
     : false
   const translation = params?.translation
-    ? params.translation === true ? { left: 0, top: 0, right: 1000, bottom: 1000 } : params.translation
+    ? params.translation === true
+      ? { left: 0, top: 0, right: 1000, bottom: 1000 }
+      : params.translation
     : false
 
   function restrictZoom(zoom: number) {
     if (!scaling) throw new Error('scaling param isnt defined')
-    const { min, max } = typeof scaling === 'function' ? scaling() : scaling
+    const { min, max } = typeof scaling === 'function'
+      ? scaling()
+      : scaling
 
     if (zoom < min) {
       return min
@@ -82,7 +88,7 @@ export function restrictor<Schemes extends BaseSchemes, K>(plugin: AreaPlugin<Sc
     if (translation && context.type === 'zoomed') {
       const position = restrictPosition(plugin.area.transform)
 
-      plugin.area.translate(position.x, position.y)
+      void plugin.area.translate(position.x, position.y)
     }
     if (translation && context.type === 'translate') {
       return {

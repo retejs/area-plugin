@@ -81,10 +81,10 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
       container,
       {
         zoomed: params => this.emit({ type: 'zoomed', data: params }),
-        pointerDown: (position, event) => this.emit({ type: 'pointerdown', data: { position, event } }),
-        pointerMove: (position, event) => this.emit({ type: 'pointermove', data: { position, event } }),
-        pointerUp: (position, event) => this.emit({ type: 'pointerup', data: { position, event } }),
-        resize: event => this.emit({ type: 'resized', data: { event } }),
+        pointerDown: (position, event) => void this.emit({ type: 'pointerdown', data: { position, event } }),
+        pointerMove: (position, event) => void this.emit({ type: 'pointermove', data: { position, event } }),
+        pointerUp: (position, event) => void this.emit({ type: 'pointerup', data: { position, event } }),
+        resize: event => void this.emit({ type: 'resized', data: { event } }),
         translated: params => this.emit({ type: 'translated', data: params }),
         reordered: element => this.emit({ type: 'reordered', data: { element } })
       },
@@ -96,7 +96,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
   }
 
   private onContextMenu = (event: MouseEvent) => {
-    this.emit({ type: 'contextmenu', data: { event, context: 'root' } })
+    void this.emit({ type: 'contextmenu', data: { event, context: 'root' } })
   }
 
   public addNodeView(node: Schemes['Node']) {
@@ -104,10 +104,10 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     const view = new NodeView(
       () => this.area.transform.k,
       {
-        picked: () => this.emit({ type: 'nodepicked', data: { id } }),
+        picked: () => void this.emit({ type: 'nodepicked', data: { id } }),
         translated: data => this.emit({ type: 'nodetranslated', data: { id, ...data } }),
-        dragged: () => this.emit({ type: 'nodedragged', data: node }),
-        contextmenu: event => this.emit({ type: 'contextmenu', data: { event, context: node } }),
+        dragged: () => void this.emit({ type: 'nodedragged', data: node }),
+        contextmenu: event => void this.emit({ type: 'contextmenu', data: { event, context: node } }),
         resized: ({ size }) => this.emit({ type: 'noderesized', data: { id: node.id, size } })
       },
       {
@@ -119,7 +119,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     this.nodeViews.set(id, view)
     this.area.content.add(view.element)
 
-    this.emit({
+    void this.emit({
       type: 'render',
       data: { element: view.element, type: 'node', payload: node }
     })
@@ -131,7 +131,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     const view = this.nodeViews.get(id)
 
     if (view) {
-      this.emit({ type: 'unmount', data: { element: view.element } })
+      void this.emit({ type: 'unmount', data: { element: view.element } })
       this.nodeViews.delete(id)
       this.area.content.remove(view.element)
     }
@@ -139,13 +139,13 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
 
   public addConnectionView(connection: Schemes['Connection']) {
     const view = new ConnectionView({
-      contextmenu: event => this.emit({ type: 'contextmenu', data: { event, context: connection } })
+      contextmenu: event => void this.emit({ type: 'contextmenu', data: { event, context: connection } })
     })
 
     this.connectionViews.set(connection.id, view)
     this.area.content.add(view.element)
 
-    this.emit({
+    void this.emit({
       type: 'render',
       data: { element: view.element, type: 'connection', payload: connection }
     })
@@ -157,7 +157,7 @@ export class AreaPlugin<Schemes extends BaseSchemes, ExtraSignals = never> exten
     const view = this.connectionViews.get(id)
 
     if (view) {
-      this.emit({ type: 'unmount', data: { element: view.element } })
+      void this.emit({ type: 'unmount', data: { element: view.element } })
       this.connectionViews.delete(id)
       this.area.content.remove(view.element)
     }
