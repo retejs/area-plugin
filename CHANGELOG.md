@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/retejs/area-plugin/compare/v2.1.1...v2.1.2) (2024-10-12)
+
+
+### Bug Fixes
+
+* memory leak ([da13ae5](https://github.com/retejs/area-plugin/commit/da13ae543eea00f86e53b8564f8ee40585c3dfcf))
+
 ## [2.1.1](https://github.com/retejs/area-plugin/compare/v2.1.0...v2.1.1) (2024-08-30)
 
 
