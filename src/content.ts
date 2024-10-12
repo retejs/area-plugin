@@ -32,6 +32,8 @@ export class Content {
   }
 
   remove(element: HTMLElement) {
-    this.holder.removeChild(element)
+    if (this.holder.contains(element)) {
+      this.holder.removeChild(element)
+    }
   }
 }
