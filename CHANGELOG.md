@@ -1,3 +1,10 @@
+## [2.1.3](https://github.com/retejs/area-plugin/compare/v2.1.2...v2.1.3) (2024-10-12)
+
+
+### Bug Fixes
+
+* prevent error on removing if the holder has been cleared ([2b2707f](https://github.com/retejs/area-plugin/commit/2b2707f7c4b1588b632ba4fd49e10fe2cb6bc21d))
+
 ## [2.1.2](https://github.com/retejs/area-plugin/compare/v2.1.1...v2.1.2) (2024-10-12)
 
 
