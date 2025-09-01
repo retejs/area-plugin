@@ -1,3 +1,10 @@
+## [2.1.4](https://github.com/retejs/area-plugin/compare/v2.1.3...v2.1.4) (2025-09-01)
+
+
+### Bug Fixes
+
+* support async operations in selector ([d3cf313](https://github.com/retejs/area-plugin/commit/d3cf3138f7d06fc9074c80edd63a0e6dd41dbe33))
+
 ## [2.1.3](https://github.com/retejs/area-plugin/compare/v2.1.2...v2.1.3) (2024-10-12)
 
 
