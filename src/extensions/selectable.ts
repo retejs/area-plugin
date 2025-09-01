@@ -31,7 +31,12 @@ export function accumulateOnCtrl() {
   }
 }
 
-export type SelectorEntity = { label: string, id: string, unselect(): void | Promise<void>, translate(dx: number, dy: number): void }
+export type SelectorEntity = {
+  label: string
+  id: string
+  unselect(): void | Promise<void>
+  translate(dx: number, dy: number): void | Promise<void>
+}
 
 /**
  * Selector class. Used to collect selected entities (nodes, connections, etc.) and synchronize them (select, unselect, translate, etc.).
@@ -64,8 +69,8 @@ export class Selector<E extends SelectorEntity> {
     await Promise.all([...Array.from(this.entities.values())].map(item => this.remove(item)))
   }
 
-  translate(dx: number, dy: number) {
-    this.entities.forEach(item => !this.isPicked(item) && item.translate(dx, dy))
+  async translate(dx: number, dy: number) {
+    await Promise.all(Array.from(this.entities.values()).map(item => !this.isPicked(item) && item.translate(dx, dy)))
   }
 
   pick(entity: Pick<E, 'label' | 'id'>) {
@@ -142,12 +147,12 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
     await core.add({
       label: 'node',
       id: node.id,
-      translate(dx, dy) {
+      async translate(dx, dy) {
         const view = area.nodeViews.get(node.id)
         const current = view?.position
 
         if (current) {
-          void view.translate(current.x + dx, current.y + dy)
+          await view.translate(current.x + dx, current.y + dy)
         }
       },
       unselect() {
@@ -180,7 +185,7 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
       const dx = position.x - previous.x
       const dy = position.y - previous.y
 
-      if (core.isPicked({ id, label: 'node' })) core.translate(dx, dy)
+      if (core.isPicked({ id, label: 'node' })) await core.translate(dx, dy)
     } else if (context.type === 'pointerdown') {
       twitch = 0
     } else if (context.type === 'pointermove') {
