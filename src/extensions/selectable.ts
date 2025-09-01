@@ -31,7 +31,7 @@ export function accumulateOnCtrl() {
   }
 }
 
-export type SelectorEntity = { label: string, id: string, unselect(): void, translate(dx: number, dy: number): void }
+export type SelectorEntity = { label: string, id: string, unselect(): void | Promise<void>, translate(dx: number, dy: number): void }
 
 /**
  * Selector class. Used to collect selected entities (nodes, connections, etc.) and synchronize them (select, unselect, translate, etc.).
@@ -45,23 +45,23 @@ export class Selector<E extends SelectorEntity> {
     return this.entities.has(`${entity.label}_${entity.id}`)
   }
 
-  add(entity: E, accumulate: boolean) {
-    if (!accumulate) this.unselectAll()
+  async add(entity: E, accumulate: boolean) {
+    if (!accumulate) await this.unselectAll()
     this.entities.set(`${entity.label}_${entity.id}`, entity)
   }
 
-  remove(entity: Pick<E, 'label' | 'id'>) {
+  async remove(entity: Pick<E, 'label' | 'id'>) {
     const id = `${entity.label}_${entity.id}`
     const item = this.entities.get(id)
 
     if (item) {
       this.entities.delete(id)
-      item.unselect()
+      await item.unselect()
     }
   }
 
-  unselectAll() {
-    [...Array.from(this.entities.values())].forEach(item => this.remove(item))
+  async unselectAll() {
+    await Promise.all([...Array.from(this.entities.values())].map(item => this.remove(item)))
   }
 
   translate(dx: number, dy: number) {
@@ -134,12 +134,12 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
    * @param nodeId Node id
    * @param accumulate Whether to accumulate nodes on selection
    */
-  function add(nodeId: NodeId, accumulate: boolean) {
+  async function add(nodeId: NodeId, accumulate: boolean) {
     const node = getEditor().getNode(nodeId)
 
     if (!node) return
 
-    core.add({
+    await core.add({
       label: 'node',
       id: node.id,
       translate(dx, dy) {
@@ -160,12 +160,12 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
    * Unselect node programmatically
    * @param nodeId Node id
    */
-  function remove(nodeId: NodeId) {
-    core.remove({ id: nodeId, label: 'node' })
+  async function remove(nodeId: NodeId) {
+    await core.remove({ id: nodeId, label: 'node' })
   }
 
   // eslint-disable-next-line max-statements, complexity
-  area.addPipe(context => {
+  area.addPipe(async context => {
     if (!context || typeof context !== 'object' || !('type' in context)) return context
 
     if (context.type === 'nodepicked') {
@@ -174,7 +174,7 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
 
       core.pick({ id: pickedId, label: 'node' })
       twitch = null
-      add(pickedId, accumulate)
+      await add(pickedId, accumulate)
     } else if (context.type === 'nodetranslated') {
       const { id, position, previous } = context.data
       const dx = position.x - previous.x
@@ -187,7 +187,7 @@ export function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selec
       if (twitch !== null) twitch++
     } else if (context.type === 'pointerup') {
       if (twitch !== null && twitch < 4) {
-        core.unselectAll()
+        await core.unselectAll()
       }
       twitch = null
     }
