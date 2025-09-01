@@ -1,3 +1,10 @@
+## [2.1.5](https://github.com/retejs/area-plugin/compare/v2.1.4...v2.1.5) (2025-09-01)
+
+
+### Bug Fixes
+
+* make translate methods async for proper handling of promises ([f81fb0d](https://github.com/retejs/area-plugin/commit/f81fb0daae60248d78c7a2b51ab2050aaa4336bd))
+
 ## [2.1.4](https://github.com/retejs/area-plugin/compare/v2.1.3...v2.1.4) (2025-09-01)
 
 
