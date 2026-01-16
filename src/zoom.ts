@@ -36,10 +36,7 @@ export class Zoom {
     e.preventDefault()
 
     const { left, top } = this.element.getBoundingClientRect()
-    const isNegative = e.deltaY < 0
-    const delta = isNegative
-      ? this.intensity
-      : -this.intensity
+    const delta = -this.intensity * Math.sign(e.deltaY);
     const ox = (left - e.clientX) * delta
     const oy = (top - e.clientY) * delta
 
