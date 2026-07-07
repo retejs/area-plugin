@@ -1,3 +1,15 @@
+# [2.2.0](https://github.com/retejs/area-plugin/compare/v2.1.5...v2.2.0) (2026-07-07)
+
+
+### Bug Fixes
+
+* prevent zooming out when horizontal wheel is rotated ([63b3c30](https://github.com/retejs/area-plugin/commit/63b3c302fb45ef0b5f6097fbea280e85e13780c8))
+
+
+### Features
+
+* **types:** export Position type ([98d213e](https://github.com/retejs/area-plugin/commit/98d213e9366664044ffc6f5e8c53175da507bb84))
+
 ## [2.1.5](https://github.com/retejs/area-plugin/compare/v2.1.4...v2.1.5) (2025-09-01)
 
 
