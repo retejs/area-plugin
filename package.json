@@ -5,7 +5,8 @@
   "scripts": {
     "build": "rete build -c rete.config.ts",
     "doc": "rete doc",
-    "lint": "rete lint"
+    "lint": "rete lint",
+    "test": "rete test"
   },
   "author": "Vitaliy Stoliarov",
   "license": "MIT",
