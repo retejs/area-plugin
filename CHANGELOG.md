@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/retejs/area-plugin/compare/v2.3.0...v2.3.1) (2026-07-08)
+
+
+### Bug Fixes
+
+* **area:** preserve clicked selection on re-pick ([5bd6e33](https://github.com/retejs/area-plugin/commit/5bd6e338b420d35397beb6a4d09bd1755ecfa9c0)), closes [#33](https://github.com/retejs/area-plugin/issues/33)
+
 # [2.3.0](https://github.com/retejs/area-plugin/compare/v2.2.1...v2.3.0) (2026-07-08)
 
 
