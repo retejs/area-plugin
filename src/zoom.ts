@@ -1,3 +1,4 @@
+import { computeWheelZoomDelta, wheelDeltaToPixels } from './zoom-wheel'
 
 /**
  * Zoom source
@@ -35,8 +36,12 @@ export class Zoom {
   protected wheel = (e: WheelEvent) => {
     e.preventDefault()
 
+    const pixels = wheelDeltaToPixels(e.deltaY, e.deltaMode)
+    const delta = computeWheelZoomDelta(pixels, this.intensity)
+
+    if (delta === 0) return
+
     const { left, top } = this.element.getBoundingClientRect()
-    const delta = -this.intensity * Math.sign(e.deltaY);
     const ox = (left - e.clientX) * delta
     const oy = (top - e.clientY) * delta
 

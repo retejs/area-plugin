@@ -12,6 +12,8 @@ export class ConnectionView {
     this.element.style.position = 'absolute'
     this.element.style.left = '0'
     this.element.style.top = '0'
-    this.element.addEventListener('contextmenu', event => events.contextmenu(event))
+    this.element.addEventListener('contextmenu', event => {
+      events.contextmenu(event)
+    })
   }
 }

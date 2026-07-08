@@ -50,7 +50,6 @@ export function restrictor<Schemes extends BaseSchemes, K>(plugin: AreaPlugin<Sc
     return zoom
   }
 
-  // eslint-disable-next-line max-statements
   function restrictPosition(position: Position): Position {
     if (!translation) throw new Error('translation param isnt defined')
     const nextPosition = { ...position }

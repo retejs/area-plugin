@@ -19,7 +19,7 @@ export type Params = {
  * @param nodes The nodes to fit
  * @param params The zoom parameters
  */
-// eslint-disable-next-line max-statements, max-len
+// eslint-disable-next-line max-len
 export async function zoomAt<Schemes extends SchemesWithSizes, K>(plugin: AreaPlugin<Schemes, K>, nodes: NodeRef<Schemes>[], params?: Params) {
   const { scale = 0.9 } = params || {}
   const editor = plugin.parentScope<NodeEditor<Schemes>>(NodeEditor)

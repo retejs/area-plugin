@@ -27,7 +27,9 @@ export class NodeView {
     this.position = { x: 0, y: 0 }
     void this.translate(0, 0)
 
-    this.element.addEventListener('contextmenu', event => this.events.contextmenu(event))
+    this.element.addEventListener('contextmenu', event => {
+      this.events.contextmenu(event)
+    })
 
     this.dragHandler = new Drag()
     this.dragHandler.initialize(

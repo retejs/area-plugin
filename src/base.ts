@@ -18,7 +18,7 @@ interface ConnectionView {
 interface Content {
   holder: HTMLElement
   add(element: HTMLElement): void
-  // eslint-disable-next-line no-undef
+
   reorder(target: HTMLElement, next: ChildNode | null): void
   remove(element: HTMLElement): void
 }

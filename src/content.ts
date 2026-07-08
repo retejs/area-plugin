@@ -18,7 +18,6 @@ export class Content {
     this.holder.appendChild(element)
   }
 
-  // eslint-disable-next-line no-undef
   async reorder(target: HTMLElement, next: ChildNode | null) {
     if (!this.holder.contains(target)) {
       throw new Error(`content doesn't have 'target' for reordering`)
