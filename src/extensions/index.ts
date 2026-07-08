@@ -4,7 +4,7 @@
  * @module Extensions
  */
 export { getBoundingBox } from './bounding-box'
-export { simpleNodesOrder } from './order'
+export { simpleNodesOrder, zIndexNodesOrder } from './order'
 export type { Params as Restrictor } from './restrictor'
 export { restrictor } from './restrictor'
 export { accumulateOnCtrl, selectableNodes, Selector, selector } from './selectable'
