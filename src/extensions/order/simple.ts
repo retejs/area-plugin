@@ -1,9 +1,10 @@
 import { BaseSchemes } from 'rete'
 
-import { BaseArea, BaseAreaPlugin } from '../base'
+import { BaseArea, BaseAreaPlugin } from '../../base'
 
 /**
- * Simple nodes order extension
+ * Simple nodes order extension.
+ * Moves picked nodes in DOM tree to render them above others.
  * @param base The base area plugin
  * @listens nodepicked
  * @listens connectioncreated
