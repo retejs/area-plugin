@@ -51,8 +51,14 @@ export class Selector<E extends SelectorEntity> {
   }
 
   async add(entity: E, accumulate: boolean) {
-    if (!accumulate) await this.unselectAll()
-    this.entities.set(`${entity.label}_${entity.id}`, entity)
+    const id = `${entity.label}_${entity.id}`
+
+    if (!accumulate) {
+      await this.unselect(Array.from(this.entities.values())
+        .filter(item => item.label !== entity.label || item.id !== entity.id))
+    }
+
+    this.entities.set(id, entity)
   }
 
   async remove(entity: Pick<E, 'label' | 'id'>) {
@@ -65,8 +71,12 @@ export class Selector<E extends SelectorEntity> {
     }
   }
 
+  async unselect(entities: Iterable<Pick<E, 'label' | 'id'>>) {
+    await Promise.all(Array.from(entities).map(entity => this.remove(entity)))
+  }
+
   async unselectAll() {
-    await Promise.all([...Array.from(this.entities.values())].map(item => this.remove(item)))
+    await this.unselect(this.entities.values())
   }
 
   async translate(dx: number, dy: number) {
