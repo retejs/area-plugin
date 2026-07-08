@@ -1,3 +1,10 @@
+## [2.3.2](https://github.com/retejs/area-plugin/compare/v2.3.1...v2.3.2) (2026-07-08)
+
+
+### Bug Fixes
+
+* **build:** normalize declaration output with rete-cli 2.0.2 ([f63a0c5](https://github.com/retejs/area-plugin/commit/f63a0c5ad84fe0f331568bf8a4d68a915e276afe))
+
 ## [2.3.1](https://github.com/retejs/area-plugin/compare/v2.3.0...v2.3.1) (2026-07-08)
 
 
