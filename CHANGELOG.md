@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/retejs/area-plugin/compare/v2.2.0...v2.2.1) (2026-07-08)
+
+
+### Bug Fixes
+
+* **zoom:** normalize wheel delta for touchpad pinch zoom ([6eaa35f](https://github.com/retejs/area-plugin/commit/6eaa35f44d89d7c7783b0229c63e430a58851770)), closes [#31](https://github.com/retejs/area-plugin/issues/31)
+
 # [2.2.0](https://github.com/retejs/area-plugin/compare/v2.1.5...v2.2.0) (2026-07-07)
 
 
