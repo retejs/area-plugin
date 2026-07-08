@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/retejs/area-plugin/compare/v2.2.1...v2.3.0) (2026-07-08)
+
+
+### Features
+
+* **order:** add z-index node ordering extension ([7884a05](https://github.com/retejs/area-plugin/commit/7884a05124413443372826991302fca06607a2f4))
+
 ## [2.2.1](https://github.com/retejs/area-plugin/compare/v2.2.0...v2.2.1) (2026-07-08)
 
 
